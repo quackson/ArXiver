@@ -5,8 +5,8 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('searchPaper',views.searchPaper,name = 'searchPaper'),
-    path('showPaper',views.showPaper,name = 'showPaper'),
-    path('recommendPaper',views.recommendPaper,name = 'recommendPaper'),
+    path('getPdfFile',views.showPaper,name = 'showPaper'),
+    path('getRecommendation',views.recommendPaper,name = 'recommendPaper'),
     
     #path('choose_paper/', views.choosePaper, name='choose_paper'),
     path('display_page/1/', views.getPaperComment, name='display_page'),
