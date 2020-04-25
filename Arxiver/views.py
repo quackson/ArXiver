@@ -161,12 +161,12 @@ def getCommentReply(commentID=1, sortedBy='time'):
 def getPaperComment(request):
     # for debug
     # return render(request, 'display_page.html')
-    #paperID = 1
+    # paperID = 1
     res = []
     paperID = request.POST.get('paperID', 1)
-    #sortedBy = 'time'
+    # sortedBy = 'time'
     sortedBy = request.POST.get('sortedBy', 'time')
-    #if sortedBy == 'time':
+    # if sortedBy == 'time':
     # 根据发布时间进行排序
     comments = models.CommentModel.objects.order_by('-pubTime', 'hot').filter(paperID=paperID)
     # 根据热度进行排序
@@ -182,26 +182,30 @@ def getPaperComment(request):
 
 # 发布评论
 def postComment(request):
-    #print('开始添加评论')
+    # print('开始添加评论')
     res = []
     paperID = request.POST.get('paperID', 'PAPERID')
     userID = request.POST.get('userID', 'USERID')
     userName = request.POST.get('userName', 'USERNAME')
     contentView = request.POST.get('contentView', 'CONTENTVIEW')
     sortedBy = request.POST.get('sortedBy', 'SORTEDBY')
-    avatar = request.POST.get('avatar','AVATAR')
-    models.CommentModel.objects.create(paperID=paperID,
-                                       userID=userID,
-                                       userName=userName,
-                                       contentView=contentView,
-                                       likeNum=0,
-                                       dislikeNum=0,
-                                       hot=0,
-                                       replyCommentID=-1,
-                                       replyNum=0,
-                                       avatar=avatar
-                                       )
-    #print('成功添加评论')
+    avatar = request.POST.get('avatar', 'AVATAR')
+    new_comment = models.CommentModel.objects.create(paperID=paperID,
+                                                     userID=userID,
+                                                     userName=userName,
+                                                     contentView=contentView,
+                                                     likeNum=0,
+                                                     dislikeNum=0,
+                                                     hot=0,
+                                                     replyCommentID=-1,
+                                                     replyNum=0,
+                                                     # avatar=avatar
+                                                     )
+
+    models.HeadPicture.objects.create(commentID=new_comment.id,
+                                      avatar=avatar)
+
+    # print('成功添加评论')
     comments = models.CommentModel.objects.filter(paperID=paperID)
     for comment in comments:
         comment.replyList = getCommentReply(commentID=comment.id, sortedBy=sortedBy)
@@ -209,6 +213,13 @@ def postComment(request):
         res.append(comment)
 
     return HttpResponse(json.dumps({'comments': res}))
+
+
+# 获取评论的头像
+def getCommentAvatar(request):
+    commentID = request.POST.get('commentID', )
+    headPicture = models.CommentModel.objects.get(commentID=commentID)
+    return HttpResponse(headPicture.avatar)
 
 
 # 进行回复
