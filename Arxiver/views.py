@@ -151,8 +151,23 @@ def getCommentReply(commentID=1, sortedBy='time'):
         replys = models.CommentModel.objects.filter(replyCommentID=commentID).order_by('-pubTime', 'hot')
     elif sortedBy == 'hot':
         replys = models.CommentModel.objects.filter(replyCommentID=commentID).order_by('hot', '-pubTime')
-    for reply in replys:
-        reply = model_to_dict(reply)
+    for single_reply in replys:
+        reply = model_to_dict(single_reply, fields=['id',
+                                                    'userName',
+                                                    'userID',
+                                                    'paperID',
+                                                    'contentView',
+                                                    # 'pubTime',
+                                                    'likeNum',
+                                                    'dislikeNum',
+                                                    'hot',
+                                                    'replyCommentID',
+                                                    'repliedName',
+                                                    'replyNum',
+                                                    'avatar',
+                                                    'replyList'])
+        reply['id'] = single_reply.id
+        reply['pubTime'] = str(single_reply.pubTime)
         res.append(reply)
     return res
 
@@ -172,9 +187,24 @@ def getPaperComment(request):
     # 根据热度进行排序
     if sortedBy == 'hot':
         comments = models.CommentModel.objects.filter(paperID=paperID).order_by('hot', '-pubTime')
-    for comment in comments:
-        comment.replyList = getCommentReply(commentID=comment.id, sortedBy=sortedBy)
-        comment = model_to_dict(comment)
+    for single_comment in comments:
+        comment = model_to_dict(single_comment, fields=['id',
+                                                        'userName',
+                                                        'userID',
+                                                        'paperID',
+                                                        'contentView',
+                                                        # 'pubTime',
+                                                        'likeNum',
+                                                        'dislikeNum',
+                                                        'hot',
+                                                        'replyCommentID',
+                                                        'repliedName',
+                                                        'replyNum',
+                                                        'avatar',
+                                                        'replyList'])
+        comment['id'] = single_comment.id
+        comment['pubTime'] = str(single_comment.pubTime)
+        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
         res.append(comment)
     print('成功获取评论')
     return HttpResponse(json.dumps({'comments': res}))
@@ -199,27 +229,43 @@ def postComment(request):
                                                      hot=0,
                                                      replyCommentID=-1,
                                                      replyNum=0,
-                                                     # avatar=avatar
+                                                     avatar=avatar,
                                                      )
 
-    models.HeadPicture.objects.create(commentID=new_comment.id,
-                                      avatar=avatar)
+    # models.HeadPicture.objects.create(commentID=new_comment.id,
+    #                                   avatar=avatar)
 
     # print('成功添加评论')
     comments = models.CommentModel.objects.filter(paperID=paperID)
-    for comment in comments:
-        comment.replyList = getCommentReply(commentID=comment.id, sortedBy=sortedBy)
-        comment = model_to_dict(comment)
+    for single_comment in comments:
+        comment = model_to_dict(single_comment, fields=['id',
+                                                        'userName',
+                                                        'userID',
+                                                        'paperID',
+                                                        'contentView',
+                                                        # 'pubTime',
+                                                        'likeNum',
+                                                        'dislikeNum',
+                                                        'hot',
+                                                        'replyCommentID',
+                                                        'repliedName',
+                                                        'replyNum',
+                                                        'avatar',
+                                                        'replyList'])
+        comment['id'] = single_comment.id
+        comment['pubTime'] = str(single_comment.pubTime)
+        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
         res.append(comment)
 
     return HttpResponse(json.dumps({'comments': res}))
 
-
+'''
 # 获取评论的头像
 def getCommentAvatar(request):
     commentID = request.POST.get('commentID', )
     headPicture = models.CommentModel.objects.get(commentID=commentID)
     return HttpResponse(headPicture.avatar)
+'''
 
 
 # 进行回复
@@ -232,7 +278,7 @@ def postReply(request):
     commentID = request.POST.get('commentID', 1)
     contentView = request.POST.get('contentView', 'CONTENTVIEW')
     repliedName = request.POST.get('repliedName', 'REPLIEDNAME')
-    models.CommentModel.objects.create(paperID=-1,
+    models.CommentModel.objects.create(paperID='reply',
                                        userID=userID,
                                        userName=userName,
                                        contentView=contentView,
@@ -245,9 +291,24 @@ def postReply(request):
     tmp_comment.replyNum += 1
     tmp_comment.save()
     comments = models.CommentModel.objects.filter(paperID=paperID)
-    for comment in comments:
-        comment.replyList = getCommentReply(commentID=comment.id, sortedBy=sortedBy)
-        comment = model_to_dict(comment)
+    for single_comment in comments:
+        comment = model_to_dict(single_comment, fields=['id',
+                                                        'userName',
+                                                        'userID',
+                                                        'paperID',
+                                                        'contentView',
+                                                        # 'pubTime',
+                                                        'likeNum',
+                                                        'dislikeNum',
+                                                        'hot',
+                                                        'replyCommentID',
+                                                        'repliedName',
+                                                        'replyNum',
+                                                        'avatar',
+                                                        'replyList'])
+        comment['id'] = single_comment.id
+        comment['pubTime'] = str(single_comment.pubTime)
+        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
         res.append(comment)
     return HttpResponse(json.dumps({'comments': res}))
 
@@ -268,10 +329,63 @@ def postLike(request):
         comment.hot -= 1
     comment.save()
     comments = models.CommentModel.objects.filter(paperID=paperID)
-    for comment_ in comments:
-        comment_.replyList = getCommentReply(commentID=comment_.id, sortedBy=sortedBy)
-        comment = model_to_dict(comment)
-        res.append(comment)
+    for single_comment in comments:
+        comment_ = model_to_dict(single_comment, fields=['id',
+                                                         'userName',
+                                                         'userID',
+                                                         'paperID',
+                                                         'contentView',
+                                                         # 'pubTime',
+                                                         'likeNum',
+                                                         'dislikeNum',
+                                                         'hot',
+                                                         'replyCommentID',
+                                                         'repliedName',
+                                                         'replyNum',
+                                                         'avatar',
+                                                         'replyList'])
+        comment_['id'] = single_comment.id
+        comment_['pubTime'] = str(single_comment.pubTime)
+        comment_['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
+        res.append(comment_)
+    return HttpResponse(json.dumps({'comments': res}))
+
+
+# 取消点踩
+def cancelLike(request):
+    res = []
+    paperID = request.POST.get('paperID', 'PAPERID')
+    commentID = request.POST.get('commentID', 'COMMENTID')
+    isLike = request.POST.get('isLike', True)
+    sortedBy = request.POST.get('sortedBy', 'time')
+    comment = models.CommentModel.objects.filter(id=commentID)
+    if isLike:
+        comment.likeNum -= 1
+        comment.hot -= 1
+    else:
+        comment.dislikeNum -= 1
+        comment.hot += 1
+    comment.save()
+    comments = models.CommentModel.objects.filter(paperID=paperID)
+    for single_comment in comments:
+        comment_ = model_to_dict(single_comment, fields=['id',
+                                                         'userName',
+                                                         'userID',
+                                                         'paperID',
+                                                         'contentView',
+                                                         # 'pubTime',
+                                                         'likeNum',
+                                                         'dislikeNum',
+                                                         'hot',
+                                                         'replyCommentID',
+                                                         'repliedName',
+                                                         'replyNum',
+                                                         'avatar',
+                                                         'replyList'])
+        comment_['id'] = single_comment.id
+        comment_['pubTime'] = str(single_comment.pubTime)
+        comment_['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
+        res.append(comment_)
     return HttpResponse(json.dumps({'comments': res}))
 
 

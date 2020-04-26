@@ -31,53 +31,49 @@
             </div>
         </div>
         <div v-for="(item,i) in comments" :key="i" class="author-title reply-father">
-            <el-avatar class="header-img" :size="40" :src="item.userImage"></el-avatar>
+            <el-avatar class="header-img" :size="40" :src="item.avatar"></el-avatar>
             <div class="author-info">
                 <span class="author-name">{{item.userName}}</span>
-                <span class="author-time">{{item.time}}</span>
+                <span class="author-time">{{item.pubTime}}</span>
             </div>
             <div class="icon-btn">
-                <span @click="showReplyInput(i,item.name,item.id)"><i class="iconfont el-icon-s-comment"></i>{{item.commentNum}}</span>
-                <span class="like" :class="{active: item.isLike}" @click="likeClick(item)">
-                <i v-if = "item.isLike" class="iconfont el-icon-star-on"></i>
-                <i v-else class="iconfont el-icon-star-off"></i>
-                {{item.like}}
+                <span @click="showReplyInput(i,item.name,item.id)"><i class="iconfont el-icon-s-comment"></i>{{item.replyNum}}</span>
+                <span class="like">
+                <i class="iconfont el-icon-star-off"></i>
+                {{item.likeNum}}
                 </span>
-                <span class="dislike" :class="{active: item.isdisLike}" @click="dislikeClick(item)">
-                <i v-if = "item.isdisLike" class="iconfont el-icon-error"></i>
-                <i v-else class="iconfont el-icon-close"></i>
-                {{item.dislike}}
+                <span class="dislike">
+                <i class="iconfont el-icon-close"></i>
+                {{item.dislikeNum}}
                 </span>
             </div>
             <div class="talk-box">
                 <p>
-                    <span class="reply">{{item.comment}}</span>
+                    <span class="reply">{{item.contentView}}</span>
                 </p>
             </div>
             <div class="reply-box">
-                <div v-for="(reply,j) in item.reply" :key="j" class="author-title">
-                    <el-avatar class="header-img" :size="40" :src="reply.fromImage"></el-avatar>
+                <div v-for="(reply,j) in item.replyList" :key="j" class="author-title">
+                    <el-avatar class="header-img" :size="40" :src="reply.avatar"></el-avatar>
                     <div class="author-info">
-                        <span class="author-name">{{reply.from}}</span>
-                        <span class="author-time">{{reply.time}}</span>
+                        <span class="author-name">{{reply.userName}}</span>
+                        <span class="author-time">{{reply.pubTime}}</span>
                     </div>
                     <div class="icon-btn">
-                        <span @click="showReplyInput(i,reply.from,reply.id)"></span>
-                        <span class="like" :class="{active: reply.isLike}" @click="likeClick(reply)">
-                        <i v-if = "reply.isLike" class="iconfont el-icon-star-on"></i>
-                        <i v-else class="iconfont el-icon-star-off"></i>
-                        {{reply.like}}
+                        <span @click="showReplyInput(i,reply.userNmae,reply.id)"></span>
+                        <span class="like">
+                        <i class="iconfont el-icon-star-off"></i>
+                        {{reply.likeNum}}
                         </span>
-                        <span class="dislike" :class="{active: reply.isdisLike}" @click="dislikeClick(reply)">
-                        <i v-if = "reply.isdisLike" class="iconfont el-icon-error"></i>
-                        <i v-else class="iconfont el-icon-close"></i>
-                        {{reply.dislike}}
+                        <span class="dislike">
+                        <i class="iconfont el-icon-close"></i>
+                        {{reply.dislikeNum}}
                         </span>
                     </div>
                     <div class="talk-box">
                         <p>
-                            <span>回复 {{reply.to}}:</span>
-                            <span class="reply">{{reply.comment}}</span>
+                            <span>回复 {{reply.replyCommentUserName}}:</span>
+                            <span class="reply">{{reply.contentView}}</span>
                         </p>
                     </div>
                     <div class="reply-box">
@@ -86,7 +82,7 @@
                 </div>
             </div>
             <div  v-show="_inputShow(i)" class="my-reply my-comment-reply">
-                <el-avatar class="header-img" :size="40" :src="myImage"></el-avatar>
+                <!--<el-avatar class="header-img" :size="40" :src="myImage"></el-avatar>-->
                 <div class="reply-info" >
                     <div tabindex="0" contenteditable="true" spellcheck="false" placeholder="输入评论..."   @input="onDivInput($event)"  class="reply-input reply-comment-input"></div>
                 </div>
@@ -145,98 +141,23 @@ export default {
             myImage:'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
             myID:19870621,
             to:'',
-            paperID:-1,
-            comments:[
-                {
-                    userName:'攻城狮',
-                    userID:19870621,
-                    userImage:'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
-                    comment:'这篇论文对我启发很大',
-                    time:'2020年4月16日 18:43',
-                    commentNum:2,
-                    like:15,
-                    dislike:2,
-                    isLike:false,
-                    isdisLike:false,
-                    inputShow:false,
-                    reply:[
-                        {
-                            from:'程序猿',
-                            fromID:19891221,
-                            fromImage:'https://ae01.alicdn.com/kf/H94c78935ffa64e7e977544d19ecebf06L.jpg',
-                            to:'攻城狮',
-                            toID:19870621,
-                            comment:'我也是！！',
-                            time:'2020年4月16日 18:50',
-                            like:15,
-                            dislike:2,
-                            isLike:false,
-                            isdisLike:false,
-                        },
-                        {
-                            from:'二进雉',
-                            fromID:1123,
-                            fromImage:'https://ae01.alicdn.com/kf/Hf6c0b4a7428b4edf866a9fbab75568e6U.jpg',
-                            to:'攻城狮',
-                            toID:19870621,
-                            comment:'确实很不错啊！',
-                            time:'2020年4月16日 18:59',
-                            like:5,
-                            dislike:2,
-                            isLike:false,
-                            isdisLike:false
-
-                        }
-                    ]
-                },
-                {
-                    userName:'程序猿',
-                    userID:19891221,
-                    userImage:'https://ae01.alicdn.com/kf/H94c78935ffa64e7e977544d19ecebf06L.jpg',
-                    comment:'这只是一个简单的测试~~~~~~',
-                    time:'2020年4月16日 20:40',
-                    commentNum:1,
-                    like:5,
-                    dislike:2,
-                    isLike:false,
-                    isdisLike:false,
-                    inputShow:false,
-                    reply:[
-                        {
-                            from:'我也不知道要叫什么名字了',
-                            fromID:19870621,
-                            fromImage:'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
-                            to:'Taylor Swift',
-                            toID:19891221,
-                            comment:'我也来试一下。',
-                            time:'2020年4月16日 20:55',
-                            like:5,
-                            dislike:2,
-                            isLike:false,
-                            isdisLike:false
-
-                        }
-                    ]
-                },
-                {
-                    userName:'真是太难了',
-                    userID:20190830,
-                    userImage:'https://ae01.alicdn.com/kf/Hdd856ae4c81545d2b51fa0c209f7aa28Z.jpg',
-                    comment:'完全不知道还要说些什么。。。。。。',
-                    time:'2020年4月16日 21:23',
-                    commentNum:0,
-                    like:5,
-                    dislike:2,
-                    isLike:false,
-                    isdisLike:false,
-                    inputShow:false,
-                    reply:[]
-                },
-            ]
+            comments:null,
            
     }
   },
   directives: {clickoutside},
+  mounted() {
+    let _this = this
+        this.$http.request({
+          url:_this.$url + '/getPaperComment?paperID=1&sortedBy=time',
+          method:'get',
+        }).then(function(response) {
+          _this.comments = response.data.comments
+          console.log(response)
+        }).catch(function(response) {
+          console.log(response)
+        })
+},
   methods: {
     inputFocus(){
             var replyInput = document.getElementById('replyInput');
@@ -256,32 +177,13 @@ export default {
             this.comments[this.index].inputShow = false
             this.index =i
             this.comments[i].inputShow = true
-            this.to = name
-            this.toID = id
+            this.replyCommentUserName = name
+            this.replyCommentID = id
         },
         _inputShow(i){
             return this.comments[i].inputShow 
         },
-        likeClick(item) {
         
-          if (item.isLike) {
-            item.like--
-          } else {
-            item.like++
-          }
-          item.isLike = !item.isLike;
-        
-        },
-        dislikeClick(item) {
-        
-          if (item.isdisLike) {
-            item.dislike--
-          } else {
-            item.dislike++
-          }
-          item.isdisLike = !item.isdisLike;
-        
-        },
 
         sendComment(){
             if(!this.replyComment){
@@ -297,10 +199,11 @@ export default {
                 let time= this.dateStr(timeNow);
                 a.userName= this.myName
                 a.comment =this.replyComment
-                a.userImage = this.myImage
-                a.time = time
-                a.commentNum = 0
-                a.like = 0
+                a.avatar = this.myImage
+                a.puibTime = time
+                a.replyNum = 0
+                a.likeNum = 0
+                a.dislikeNum = 0
                 this.comments.push(a)
                 this.replyComment = ''
                 input.innerHTML = '';
@@ -318,14 +221,15 @@ export default {
                 let a ={}
                 let timeNow = new Date().getTime();
                 let time= this.dateStr(timeNow);
-                a.from= this.myName
-                a.to = this.to
-                a.fromImage = this.myImage
-                a.comment =this.replyComment
-                a.time = time
-                a.commentNum = 0
-                a.like = 0
-                this.comments[i].reply.push(a)
+                a.userName= this.myName
+                a.replyCommentUserName = this.to
+                a.avatar = this.myImage
+                a.contentView =this.replyComment
+                a.pubTime = time
+                a.replyNum = 0
+                a.likeNum = 0
+                a.dislikeNum = 0
+                this.comments[i].replyList.push(a)
                 this.replyComment = ''
                 document.getElementsByClassName("reply-comment-input")[i].innerHTML = ""
             }

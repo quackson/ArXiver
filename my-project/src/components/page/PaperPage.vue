@@ -28,7 +28,7 @@
             <li>
                 <p>当前第{{ currentPage }}页/共{{ pageCount }}页</p>
             </li>
-            <el-button class="download-btn" size="medium" type="info">下载论文</el-button>
+            <a style = "margin-top: 15px;margin-left: 30px"  @click = "downloadPdf">download</a>
             <el-button class="mark-btn" size="medium" type="info">收藏</el-button>
         </ul>
     </el-main>
@@ -43,7 +43,8 @@ export default {
     return {
       currentPage: papers.currentPage, // 当前页码
       pageCount: papers.pageCount, // 总页码
-      src: papers.url,
+      src: 'http://arxiv.org/pdf/cond-mat/0402245v1.pdf',
+      url: 'http://arxiv.org/pdf/cond-mat/0402245v1',
       scale: 100,
       idx: -1,
       loadedRatio: 0,
@@ -56,6 +57,7 @@ export default {
     pdf
   },
   methods: {
+    
     // 改变PDF页码,val传过来区分上一页下一页的值,0上一页,1下一页
     changePdfPage(val) {
       if(val === 0 && this.currentPage > 1) {
@@ -73,6 +75,11 @@ export default {
     // pdf加载时
     loadPdfHandler(e) {
       this.currentPage = 1; // 加载的时候先加载第一页
+    },
+    downloadPdf() {
+      let a = document.createElement('a');
+      a.href = this.$url + '/getPdfFile?url='+this.url ;
+      a.click();
     },
     //放大
     scaleD() {
