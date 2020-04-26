@@ -1,277 +1,308 @@
 <template>
-  <div class = "wrapper">
-  <el-main class= "col2">
-        <div class="comment">
-        <el-select v-model="value" placeholder="排序方式" size = "mini" style = "padding-top: 10px;float:right;">
-        <el-option
+  <div class="wrapper">
+    <el-main class="col2">
+      <div class="comment">
+        <el-select v-model="value" placeholder="排序方式" size="mini" style="padding-top: 10px;float:right;">
+          <el-option
             v-for="item in options"
             :key="item.value"
             :label="item.label"
             :value="item.value"
-            :disabled="item.disabled">
-        </el-option>
+            :disabled="item.disabled"
+          >
+          </el-option>
         </el-select>
         <div v-clickoutside="hideReplyBtn" @click="inputFocus" class="my-reply">
-            <el-avatar class="header-img" :size="40" :src="myImage"></el-avatar>
-            <div class="reply-info" >
-                <div 
-                tabindex="0" 
-                contenteditable="true" 
-                id="replyInput" 
-                spellcheck="false" 
-                placeholder="输入评论..." 
-                class="reply-input" 
-                @focus="showReplyBtn"  
-                @input="onDivInput($event)"
-                >
-                </div>
-            </div>
-            <div class="reply-btn-box" v-show="btnShow">
-                <el-button class="reply-btn" size="medium" @click="sendComment" type="primary">发表评论</el-button>
-            </div>
+          <el-avatar class="header-img" :size="40" :src="myImage"></el-avatar>
+          <div class="reply-info">
+            <div
+              tabindex="0"
+              contenteditable="true"
+              id="replyInput"
+              spellcheck="false"
+              placeholder="输入评论..."
+              class="reply-input"
+              @focus="showReplyBtn"
+              @input="onDivInput($event)"
+            ></div>
+          </div>
+          <div class="reply-btn-box" v-show="btnShow">
+            <el-button class="reply-btn" size="medium" @click="sendComment" type="primary">发表评论</el-button>
+          </div>
         </div>
-        <div v-for="(item,i) in comments" :key="i" class="author-title reply-father">
-            <el-avatar class="header-img" :size="40" :src="item.avatar"></el-avatar>
-            <div class="author-info">
-                <span class="author-name">{{item.userName}}</span>
-                <span class="author-time">{{item.pubTime}}</span>
-            </div>
-            <div class="icon-btn">
-                <span @click="showReplyInput(i,item.name,item.id)"><i class="iconfont el-icon-s-comment"></i>{{item.replyNum}}</span>
+        <div v-for="(item, i) in comments" :key="i" class="author-title reply-father">
+          <el-avatar class="header-img" :size="40" :src="item.avatar"></el-avatar>
+          <div class="author-info">
+            <span class="author-name">{{ item.userName }}</span>
+            <span class="author-time">{{ item.pubTime }}</span>
+          </div>
+          <div class="icon-btn">
+            <span @click="showReplyInput(i, item.name, item.id)"
+              ><i class="iconfont el-icon-s-comment"></i>{{ item.replyNum }}</span
+            >
+            <span class="like">
+              <i class="iconfont el-icon-star-off"></i>
+              {{ item.likeNum }}
+            </span>
+            <span class="dislike">
+              <i class="iconfont el-icon-close"></i>
+              {{ item.dislikeNum }}
+            </span>
+          </div>
+          <div class="talk-box">
+            <p>
+              <span class="reply">{{ item.contentView }}</span>
+            </p>
+          </div>
+          <div class="reply-box">
+            <div v-for="(reply, j) in item.replyList" :key="j" class="author-title">
+              <el-avatar class="header-img" :size="40" :src="reply.avatar"></el-avatar>
+              <div class="author-info">
+                <span class="author-name">{{ reply.userName }}</span>
+                <span class="author-time">{{ reply.pubTime }}</span>
+              </div>
+              <div class="icon-btn">
+                <span @click="showReplyInput(i, reply.userNmae, reply.id)"></span>
                 <span class="like">
-                <i class="iconfont el-icon-star-off"></i>
-                {{item.likeNum}}
+                  <i class="iconfont el-icon-star-off"></i>
+                  {{ reply.likeNum }}
                 </span>
                 <span class="dislike">
-                <i class="iconfont el-icon-close"></i>
-                {{item.dislikeNum}}
+                  <i class="iconfont el-icon-close"></i>
+                  {{ reply.dislikeNum }}
                 </span>
-            </div>
-            <div class="talk-box">
+              </div>
+              <div class="talk-box">
                 <p>
-                    <span class="reply">{{item.contentView}}</span>
+                  <span>回复 {{ reply.replyCommentUserName }}:</span>
+                  <span class="reply">{{ reply.contentView }}</span>
                 </p>
+              </div>
+              <div class="reply-box"></div>
             </div>
-            <div class="reply-box">
-                <div v-for="(reply,j) in item.replyList" :key="j" class="author-title">
-                    <el-avatar class="header-img" :size="40" :src="reply.avatar"></el-avatar>
-                    <div class="author-info">
-                        <span class="author-name">{{reply.userName}}</span>
-                        <span class="author-time">{{reply.pubTime}}</span>
-                    </div>
-                    <div class="icon-btn">
-                        <span @click="showReplyInput(i,reply.userNmae,reply.id)"></span>
-                        <span class="like">
-                        <i class="iconfont el-icon-star-off"></i>
-                        {{reply.likeNum}}
-                        </span>
-                        <span class="dislike">
-                        <i class="iconfont el-icon-close"></i>
-                        {{reply.dislikeNum}}
-                        </span>
-                    </div>
-                    <div class="talk-box">
-                        <p>
-                            <span>回复 {{reply.replyCommentUserName}}:</span>
-                            <span class="reply">{{reply.contentView}}</span>
-                        </p>
-                    </div>
-                    <div class="reply-box">
-
-                    </div>
-                </div>
+          </div>
+          <div v-show="_inputShow(i)" class="my-reply my-comment-reply">
+            <!--<el-avatar class="header-img" :size="40" :src="myImage"></el-avatar>-->
+            <div class="reply-info">
+              <div
+                tabindex="0"
+                contenteditable="true"
+                spellcheck="false"
+                placeholder="输入评论..."
+                @input="onDivInput($event)"
+                class="reply-input reply-comment-input"
+              ></div>
             </div>
-            <div  v-show="_inputShow(i)" class="my-reply my-comment-reply">
-                <!--<el-avatar class="header-img" :size="40" :src="myImage"></el-avatar>-->
-                <div class="reply-info" >
-                    <div tabindex="0" contenteditable="true" spellcheck="false" placeholder="输入评论..."   @input="onDivInput($event)"  class="reply-input reply-comment-input"></div>
-                </div>
-                <div class=" reply-btn-box">
-                    <el-button class="reply-btn" size="medium" @click="sendCommentReply(i,j)" type="primary">发表评论</el-button>
+            <div class=" reply-btn-box">
+              <el-button class="reply-btn" size="medium" @click="sendCommentReply(i, j)" type="primary"
+                >发表评论</el-button
+              >
             </div>
+          </div>
         </div>
-        </div>
-    </div>
+      </div>
     </el-main>
   </div>
 </template>
 
-
 <script>
 const clickoutside = {
-    // 初始化指令
-    bind(el, binding, vnode) {
+  // 初始化指令
+  bind(el, binding, vnode) {
     function documentHandler(e) {
-    // 这里判断点击的元素是否是本身，是本身，则返回
-        if (el.contains(e.target)) {
-            return false;
-        }
-    // 判断指令中是否绑定了函数
-        if (binding.expression) {
-            // 如果绑定了函数 则调用那个函数，此处binding.value就是handleClose方法
-            binding.value(e);
-        }
+      // 这里判断点击的元素是否是本身，是本身，则返回
+      if (el.contains(e.target)) {
+        return false
+      }
+      // 判断指令中是否绑定了函数
+      if (binding.expression) {
+        // 如果绑定了函数 则调用那个函数，此处binding.value就是handleClose方法
+        binding.value(e)
+      }
     }
     // 给当前元素绑定个私有变量，方便在unbind中可以解除事件监听
-    el.vueClickOutside = documentHandler;
-    document.addEventListener('click', documentHandler);
-    },
-    update() {},
-    unbind(el, binding) {
-    // 解除事件监听
-    document.removeEventListener('click', el.vueClickOutside);
-    delete el.vueClickOutside;
+    el.vueClickOutside = documentHandler
+    document.addEventListener('click', documentHandler)
   },
-};
+  update() {},
+  unbind(el, binding) {
+    // 解除事件监听
+    document.removeEventListener('click', el.vueClickOutside)
+    delete el.vueClickOutside
+  },
+}
 export default {
-    data() {
-        return {
-            options: [{
-                value: '1',
-                label: '时间'
-            },
-            {
-                value: '2',
-                label: '热度' 
-            }],
-            btnShow: false,
-            index:'0',
-            replyComment:'',
-            myName:'攻城狮',
-            myImage:'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
-            myID:19870621,
-            to:'',
-            comments:null,
-           
+  data() {
+    return {
+      options: [
+        {
+          value: '1',
+          label: '时间',
+        },
+        {
+          value: '2',
+          label: '热度',
+        },
+      ],
+      btnShow: false,
+      index: '0',
+      replyComment: '',
+      myName: '攻城狮',
+      myImage: 'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
+      myID: 19870621,
+      to: '',
+      comments: null,
     }
   },
-  directives: {clickoutside},
+  directives: { clickoutside },
   mounted() {
     let _this = this
-        this.$http.request({
-          url:_this.$url + '/getPaperComment?paperID=1&sortedBy=time',
-          method:'get',
-        }).then(function(response) {
-          _this.comments = response.data.comments
-          console.log(response)
-        }).catch(function(response) {
-          console.log(response)
-        })
-},
+    this.$http
+      .request({
+        url: _this.$url + '/getPaperComment?paperID=1&sortedBy=time',
+        method: 'get',
+      })
+      .then(function(response) {
+        _this.comments = response.data.comments
+        console.log(response)
+      })
+      .catch(function(response) {
+        console.log(response)
+      })
+  },
   methods: {
-    inputFocus(){
-            var replyInput = document.getElementById('replyInput');
-            replyInput.style.padding= "8px 8px"
-            replyInput.style.border ="2px solid blue"
-            replyInput.focus()
-        },  
-        showReplyBtn(){
-            this.btnShow = true
-        },
-        hideReplyBtn(){
-            this.btnShow = false
-            replyInput.style.padding= "10px"
-            replyInput.style.border ="none"
-        },
-        showReplyInput(i,name,id){
-            this.comments[this.index].inputShow = false
-            this.index =i
-            this.comments[i].inputShow = true
-            this.replyCommentUserName = name
-            this.replyCommentID = id
-        },
-        _inputShow(i){
-            return this.comments[i].inputShow 
-        },
-        
+    inputFocus() {
+      var replyInput = document.getElementById('replyInput')
+      replyInput.style.padding = '8px 8px'
+      replyInput.style.border = '2px solid blue'
+      replyInput.focus()
+    },
+    showReplyBtn() {
+      this.btnShow = true
+    },
+    hideReplyBtn() {
+      this.btnShow = false
+      replyInput.style.padding = '10px'
+      replyInput.style.border = 'none'
+    },
+    showReplyInput(i, name, id) {
+      this.comments[this.index].inputShow = false
+      this.index = i
+      this.comments[i].inputShow = true
+      this.replyCommentUserName = name
+      this.replyCommentID = id
+    },
+    _inputShow(i) {
+      return this.comments[i].inputShow
+    },
 
-        sendComment(){
-            if(!this.replyComment){
-                 this.$message({
-                    showClose: true,
-                    type:'warning',
-                    message:'评论不能为空'
-                })
-            }else{
-                let a ={}
-                let input =  document.getElementById('replyInput')
-                let timeNow = new Date().getTime();
-                let time= this.dateStr(timeNow);
-                a.userName= this.myName
-                a.comment =this.replyComment
-                a.avatar = this.myImage
-                a.puibTime = time
-                a.replyNum = 0
-                a.likeNum = 0
-                a.dislikeNum = 0
-                this.comments.push(a)
-                this.replyComment = ''
-                input.innerHTML = '';
+    sendComment() {
+      if (!this.replyComment) {
+        this.$message({
+          showClose: true,
+          type: 'warning',
+          message: '评论不能为空',
+        })
+      } else {
+        let a = {}
+        let input = document.getElementById('replyInput')
+        let timeNow = new Date().getTime()
+        let time = this.dateStr(timeNow)
+        a.userName = this.myName
+        a.comment = this.replyComment
+        a.avatar = this.myImage
+        a.puibTime = time
+        a.replyNum = 0
+        a.likeNum = 0
+        a.dislikeNum = 0
+        this.comments.push(a)
+        this.replyComment = ''
+        input.innerHTML = ''
 
-            }
-        },
-        sendCommentReply(i,j){
-            if(!this.replyComment){
-                 this.$message({
-                    showClose: true,
-                    type:'warning',
-                    message:'评论不能为空'
-                })
-            }else{
-                let a ={}
-                let timeNow = new Date().getTime();
-                let time= this.dateStr(timeNow);
-                a.userName= this.myName
-                a.replyCommentUserName = this.to
-                a.avatar = this.myImage
-                a.contentView =this.replyComment
-                a.pubTime = time
-                a.replyNum = 0
-                a.likeNum = 0
-                a.dislikeNum = 0
-                this.comments[i].replyList.push(a)
-                this.replyComment = ''
-                document.getElementsByClassName("reply-comment-input")[i].innerHTML = ""
-            }
-        },
-        onDivInput: function(e) {
-            this.replyComment = e.target.innerHTML;
-        },
-        dateStr(date){
-            //获取js 时间戳
-            var time=new Date().getTime();
-            //去掉 js 时间戳后三位，与php 时间戳保持一致
-            time=parseInt((time-date)/1000);
-            //存储转换值 
-            var s;
-            if(time<60*10){//十分钟内
-                return '刚刚';
-            }else if((time<60*60)&&(time>=60*10)){
-                //超过十分钟少于1小时
-                s = Math.floor(time/60);
-                return  s+"分钟前";
-            }else if((time<60*60*24)&&(time>=60*60)){ 
-                //超过1小时少于24小时
-                s = Math.floor(time/60/60);
-                return  s+"小时前";
-            }else if((time<60*60*24*30)&&(time>=60*60*24)){ 
-                //超过1天少于30天内
-                s = Math.floor(time/60/60/24);
-                return s+"天前";
-            }else{ 
-                //超过30天ddd
-                var date= new Date(parseInt(date));
-                return date.getFullYear()+"/"+(date.getMonth()+1)+"/"+date.getDate();
-            }
-        }
-  }
+        var post_request = new FormData();
+        post_request.append('paperID',"1");
+        post_request.append('userID', this.myID);
+        post_request.append("userName", this.myName);
+        post_request.append("contentView",'假装是评论');
+        post_request.append('sortedBy', 'time');
+        post_request.append('avatar', "avatar");
+        this.$http
+          .request({
+            url: this.$url + '/postComment',
+            method: 'post',
+            data: post_request,
+            headers:{'Content-Type':'multipart/form-data'}
+          })
+          .then(function(response) {
+            console.log(response)
+          })
+          .catch(function(response) {
+            console.log(response)
+          })
+      }
+    },
+    sendCommentReply(i, j) {
+      if (!this.replyComment) {
+        this.$message({
+          showClose: true,
+          type: 'warning',
+          message: '评论不能为空',
+        })
+      } else {
+        let a = {}
+        let timeNow = new Date().getTime()
+        let time = this.dateStr(timeNow)
+        a.userName = this.myName
+        a.replyCommentUserName = this.to
+        a.avatar = this.myImage
+        a.contentView = this.replyComment
+        a.pubTime = time
+        a.replyNum = 0
+        a.likeNum = 0
+        a.dislikeNum = 0
+        this.comments[i].replyList.push(a)
+        this.replyComment = ''
+        document.getElementsByClassName('reply-comment-input')[i].innerHTML = ''
+      }
+    },
+    onDivInput: function(e) {
+      this.replyComment = e.target.innerHTML
+    },
+    dateStr(date) {
+      //获取js 时间戳
+      var time = new Date().getTime()
+      //去掉 js 时间戳后三位，与php 时间戳保持一致
+      time = parseInt((time - date) / 1000)
+      //存储转换值
+      var s
+      if (time < 60 * 10) {
+        //十分钟内
+        return '刚刚'
+      } else if (time < 60 * 60 && time >= 60 * 10) {
+        //超过十分钟少于1小时
+        s = Math.floor(time / 60)
+        return s + '分钟前'
+      } else if (time < 60 * 60 * 24 && time >= 60 * 60) {
+        //超过1小时少于24小时
+        s = Math.floor(time / 60 / 60)
+        return s + '小时前'
+      } else if (time < 60 * 60 * 24 * 30 && time >= 60 * 60 * 24) {
+        //超过1天少于30天内
+        s = Math.floor(time / 60 / 60 / 24)
+        return s + '天前'
+      } else {
+        //超过30天ddd
+        var date = new Date(parseInt(date))
+        return date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate()
+      }
+    },
+  },
 }
 </script>
 
-
 <style lang="stylus" scoped>
 
-.col2 
+.col2
     top 0
     left 70%
     bottom 0
@@ -284,7 +315,7 @@ export default {
     .header-img
         display inline-block
         vertical-align top
-    .reply-info    
+    .reply-info
         display inline-block
         margin-left 5px
         width 90%
@@ -331,7 +362,7 @@ export default {
         width 60%
         height 40px
         line-height 20px
-        >span 
+        >span
             display block
             cursor pointer
             overflow hidden
@@ -345,15 +376,15 @@ export default {
             font-size 14px
     .icon-btn
         width 30%
-        padding 0 !important 
+        padding 0 !important
         float right
         @media screen and (max-width : 1200px){
             width 20%
             padding 7px
         }
-        >span 
+        >span
             cursor pointer
-        .iconfont 
+        .iconfont
             margin 0 5px
     .talk-box
         margin 0 50px
