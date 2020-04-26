@@ -7,7 +7,7 @@
 					height="auto"
                     style="width: 100%"
 					>
-        <el-table-column prop="title" label="推荐论文" width="400" :show-overflow-tooltip="true">
+        <el-table-column prop="title" label="搜索结果" width="400" :show-overflow-tooltip="true">
 			<template slot-scope="scope">
             <el-button type="text" 
 			@click="openDialog"
@@ -83,9 +83,24 @@ export default {
 			
 			//var list=new Array();
 			//window.alert("sometext");
+		var k=this.$route.query.k;
+		var m=this.$route.query.m;
+		var way="";
+		if(m=='1')
+		{
+			way="ti";
+		}
+		if(m=='2')
+		{
+			way='au';
+		}
+		if(m=='3')
+		{
+			way='abs';
+		}
 		let _this = this
         this.$http.request({
-          url:_this.$url + '/searchPaper?method=ti&query=github',
+          url:_this.$url + '/searchPaper?method='+ way+'&query='+k ,
           method:'get',
         }).then(function(response) {
           _this.tableData = response.data.papers,

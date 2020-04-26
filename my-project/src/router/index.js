@@ -40,7 +40,12 @@ export default new Router({
                   path: '/account/:activeName',
                   component: () => import(/* webpackChunkName: "homepage" */ '../components/page/Homepage.vue'),
                   meta: {title: '个人信息页面'}
-                }
+                },
+				{
+                  path: '/search',
+                  component: () => import(/* webpackChunkName: "search" */ '../components/page/searchPage.vue'),
+                  meta: {title: '搜索页面'}
+                },
             ]
         },
         {

@@ -11,13 +11,13 @@
 
     <div class="logo">arXiver</div>
     <div class="searchbar">
-      <el-input placeholder="请输入内容" v-model="search">
+      <el-input placeholder="请输入内容" v-model="search" >
         <el-select v-model="select" slot="prepend" placeholder="请选择">
           <el-option label="题目" value="1"></el-option>
           <el-option label="作者" value="2"></el-option>
           <el-option label="内容" value="3"></el-option>
         </el-select>
-        <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click="gotosearchpage"></el-button>
       </el-input>
     </div>
     <div class="header-right">
@@ -92,6 +92,21 @@ export default {
         this.$router.push("/login");
       }
     },
+	//跳转到搜索页面
+	gotosearchpage()	{
+	
+		var keyword=this.search;
+		var method=this.select;
+		 this.$router.push({
+          path: '/search',
+          query: {
+            k: keyword,
+			m:method,
+          }
+        });	
+	
+	//this.$router.push("/search");	
+	},
     //主页
     homeScreenChange() {
       this.$router.push("/dashboard");
