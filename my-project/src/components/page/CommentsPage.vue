@@ -209,9 +209,9 @@ export default {
         let timeNow = new Date().getTime()
         let time = this.dateStr(timeNow)
         a.userName = this.myName
-        a.comment = this.replyComment
+        a.contentView = this.replyComment
         a.avatar = this.myImage
-        a.puibTime = time
+        a.pubTime = time
         a.replyNum = 0
         a.likeNum = 0
         a.dislikeNum = 0
@@ -253,7 +253,7 @@ export default {
         let timeNow = new Date().getTime()
         let time = this.dateStr(timeNow)
         a.userName = this.myName
-        a.replyCommentUserName = this.to
+        a.replyCommentUserName = this.comments[i].userName
         a.avatar = this.myImage
         a.contentView = this.replyComment
         a.pubTime = time
