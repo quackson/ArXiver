@@ -216,16 +216,16 @@ export default {
         a.likeNum = 0
         a.dislikeNum = 0
         this.comments.push(a)
-        this.replyComment = ''
-        input.innerHTML = ''
 
         var post_request = new FormData();
         post_request.append('paperID',"1");
         post_request.append('userID', this.myID);
         post_request.append("userName", this.myName);
-        post_request.append("contentView",'假装是评论');
+        post_request.append("contentView",this.replyComment);
         post_request.append('sortedBy', 'time');
         post_request.append('avatar', "avatar");
+        this.replyComment = ''
+        input.innerHTML = ''
         this.$http
           .request({
             url: this.$url + '/postComment',
