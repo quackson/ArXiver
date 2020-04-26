@@ -278,7 +278,8 @@ def postReply(request):
     commentID = request.POST.get('commentID', 1)
     contentView = request.POST.get('contentView', 'CONTENTVIEW')
     repliedName = request.POST.get('repliedName', 'REPLIEDNAME')
-    models.CommentModel.objects.create(paperID='reply',
+    print("info: ", paperID, userID, userName, sortedBy, commentID, contentView, repliedName)
+    models.CommentModel.objects.create(paperID=paperID,
                                        userID=userID,
                                        userName=userName,
                                        contentView=contentView,

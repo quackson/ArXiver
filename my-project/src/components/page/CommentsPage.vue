@@ -217,13 +217,13 @@ export default {
         a.dislikeNum = 0
         this.comments.push(a)
 
-        var post_request = new FormData();
-        post_request.append('paperID',"1");
-        post_request.append('userID', this.myID);
-        post_request.append("userName", this.myName);
-        post_request.append("contentView",this.replyComment);
-        post_request.append('sortedBy', 'time');
-        post_request.append('avatar', "avatar");
+        var post_request = new FormData()
+        post_request.append('paperID', '1')
+        post_request.append('userID', this.myID)
+        post_request.append('userName', this.myName)
+        post_request.append('contentView', this.replyComment)
+        post_request.append('sortedBy', 'time')
+        post_request.append('avatar', 'avatar')
         this.replyComment = ''
         input.innerHTML = ''
         this.$http
@@ -231,7 +231,7 @@ export default {
             url: this.$url + '/postComment',
             method: 'post',
             data: post_request,
-            headers:{'Content-Type':'multipart/form-data'}
+            headers: { 'Content-Type': 'multipart/form-data' },
           })
           .then(function(response) {
             console.log(response)
@@ -261,8 +261,32 @@ export default {
         a.likeNum = 0
         a.dislikeNum = 0
         this.comments[i].replyList.push(a)
+
+        var post_request = new FormData()
+        post_request.append('paperID', '1')
+        post_request.append('userID', this.myID)
+        post_request.append('userName', this.myName)
+        post_request.append('sortedBy', 'time')
+        post_request.append('commentID', this.comments[i].id)
+        post_request.append('contentView', this.replyComment)
+        post_request.append('repliedName', this.myName)
+
         this.replyComment = ''
         document.getElementsByClassName('reply-comment-input')[i].innerHTML = ''
+
+        this.$http
+          .request({
+            url: this.$url + '/postReply',
+            method: 'post',
+            data: post_request,
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+          .then(function(response) {
+            console.log(response)
+          })
+          .catch(function(response) {
+            console.log(response)
+          })
       }
     },
     onDivInput: function(e) {
