@@ -356,10 +356,10 @@ def cancelLike(request):
     res = []
     paperID = request.POST.get('paperID', 'PAPERID')
     commentID = request.POST.get('commentID', 'COMMENTID')
-    isLike = request.POST.get('isLike', True)
+    isLike = request.POST.get('isLike', '1')
     sortedBy = request.POST.get('sortedBy', 'time')
     comment = models.CommentModel.objects.get(id=commentID)
-    if isLike:
+    if isLike == '1':
         comment.likeNum -= 1
         comment.hot -= 1
     else:
