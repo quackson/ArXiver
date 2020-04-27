@@ -10,7 +10,7 @@
         <el-table-column prop="title" label="搜索结果" width="400" :show-overflow-tooltip="true">
 			<template slot-scope="scope">
             <el-button type="text" 
-			@click="openDialog"
+			@click="openDialog(scope.row)"
 			>
 			{{ scope.row.title}}
 			</el-button>
@@ -74,10 +74,17 @@ export default {
                    console.log(`当前页: ${val}`);
                    this.currentPage = val;    //动态改变
     },
-	openDialog () {
+	openDialog (paper) {
 				//console.log("get!");
-				this.$router.push({path: '/readpage' })
-    },
+				//this.$router.push({path: '/readpage' });
+		console.log(paper);
+		  this.$router.push({
+          path: '/readpage',
+          query: {
+            url:paper.id
+          }
+		  });
+		 }
    },
 	created(){
 			
@@ -97,6 +104,10 @@ export default {
 		if(m=='3')
 		{
 			way='abs';
+		}
+		if(m=='4')
+		{
+			way='cat';
 		}
 		let _this = this
         this.$http.request({
