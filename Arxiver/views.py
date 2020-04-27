@@ -278,8 +278,7 @@ def postReply(request):
     commentID = request.POST.get('commentID', 1)
     contentView = request.POST.get('contentView', 'CONTENTVIEW')
     repliedName = request.POST.get('repliedName', 'REPLIEDNAME')
-    print("info: ", paperID, userID, userName, sortedBy, commentID, contentView, repliedName)
-    models.CommentModel.objects.create(paperID=paperID,
+    models.CommentModel.objects.create(paperID='reply',
                                        userID=userID,
                                        userName=userName,
                                        contentView=contentView,
@@ -319,10 +318,10 @@ def postLike(request):
     res = []
     paperID = request.POST.get('paperID', 'PAPERID')
     commentID = request.POST.get('commentID', 'COMMENTID')
-    isLike = request.POST.get('isLike', True)
+    isLike = request.POST.get('isLike', '1')
     sortedBy = request.POST.get('sortedBy', 'time')
-    comment = models.CommentModel.objects.filter(id=commentID)
-    if isLike:
+    comment = models.CommentModel.objects.get(id=commentID)
+    if isLike == '1':
         comment.likeNum += 1
         comment.hot += 1
     else:
@@ -359,7 +358,7 @@ def cancelLike(request):
     commentID = request.POST.get('commentID', 'COMMENTID')
     isLike = request.POST.get('isLike', True)
     sortedBy = request.POST.get('sortedBy', 'time')
-    comment = models.CommentModel.objects.filter(id=commentID)
+    comment = models.CommentModel.objects.get(id=commentID)
     if isLike:
         comment.likeNum -= 1
         comment.hot -= 1

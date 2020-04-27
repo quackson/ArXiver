@@ -40,11 +40,11 @@
             <span @click="showReplyInput(i, item.name, item.id)"
               ><i class="iconfont el-icon-s-comment"></i>{{ item.replyNum }}</span
             >
-            <span class="like">
+            <span class="like" :class="{active: item.isLike}" @click="likeClick(i, item)">
               <i class="iconfont el-icon-star-off"></i>
               {{ item.likeNum }}
             </span>
-            <span class="dislike">
+            <span class="dislike" :class="{active: item.isDislike}" @click="dislikeClick(i, item)">
               <i class="iconfont el-icon-close"></i>
               {{ item.dislikeNum }}
             </span>
@@ -63,11 +63,11 @@
               </div>
               <div class="icon-btn">
                 <span @click="showReplyInput(i, reply.userNmae, reply.id)"></span>
-                <span class="like">
+                <span class="like" :class="{active: reply.isLike}" @click="likeClick(j, reply)">
                   <i class="iconfont el-icon-star-off"></i>
                   {{ reply.likeNum }}
                 </span>
-                <span class="dislike">
+                <span class="dislike" :class="{active: reply.isDislike}" @click="dislikeClick(j, reply)">
                   <i class="iconfont el-icon-close"></i>
                   {{ reply.dislikeNum }}
                 </span>
@@ -195,7 +195,140 @@ export default {
     _inputShow(i) {
       return this.comments[i].inputShow
     },
-
+    likeClick(i, item) {
+      if (item.isLike === null) {
+        Vue.$set(item, "isLike", true);
+        item.likeNum++
+        var post_request = new FormData()
+        post_request.append('paperID', '1')
+        post_request.append('commentID', this.comments[i].id)
+        post_request.append('isLike', '1')
+        post_request.append('sortedBy', 'time')
+        this.$http
+          .request({
+            url: this.$url + '/postLike',
+            method: 'post',
+            data: post_request,
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+          .then(function(response) {
+            console.log(response)
+          })
+          .catch(function(response) {
+            console.log(response)
+          })
+      } else {
+        if (item.isLike) {
+          item.likeNum--
+          var post_request = new FormData()
+          post_request.append('paperID', '1')
+          post_request.append('commentID', this.comments[i].id)
+          post_request.append('isLike', '1')
+          post_request.append('sortedBy', 'time')
+          this.$http
+            .request({
+             url: this.$url + '/cancelLike',
+              method: 'post',
+              data: post_request,
+              headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            .then(function(response) {
+              console.log(response)
+            })
+            .catch(function(response) {
+              console.log(response)
+            })
+        } else {
+          item.likeNum++
+          var post_request = new FormData()
+          post_request.append('paperID', '1')
+          post_request.append('commentID', this.comments[i].id)
+          post_request.append('isLike', '1')
+          post_request.append('sortedBy', 'time')
+          this.$http
+            .request({
+             url: this.$url + '/postLike',
+              method: 'post',
+              data: post_request,
+              headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            .then(function(response) {
+              console.log(response)
+            })
+            .catch(function(response) {
+              console.log(response)
+            })
+        }
+        item.isLike = !item.isLike;
+      }
+    },
+    dislikeClick(i, item) {
+      if (item.isDislike === null) {
+        Vue.$set(item, "isDislike", true);
+        item.dislikeNum++
+        var post_request = new FormData()
+        post_request.append('paperID', '1')
+        post_request.append('commentID', this.comments[i].id)
+        post_request.append('isLike', '0')
+        post_request.append('sortedBy', 'time')
+        this.$http
+          .request({
+            url: this.$url + '/postLike',
+            method: 'post',
+            data: post_request,
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+          .then(function(response) {
+            console.log(response)
+          })
+          .catch(function(response) {
+            console.log(response)
+          })
+      } else {
+        if (item.isDislike) {
+          item.dislikeNum--
+          var post_request = new FormData()
+          post_request.append('paperID', '1')
+          post_request.append('commentID', this.comments[i].id)
+          post_request.append('isLike', '0')
+          post_request.append('sortedBy', 'time')
+          this.$http
+            .request({
+             url: this.$url + '/cancelLike',
+              method: 'post',
+              data: post_request,
+              headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            .then(function(response) {
+              console.log(response)
+            })
+            .catch(function(response) {
+              console.log(response)
+            })
+        } else {
+          item.dislikeNum++
+          var post_request = new FormData()
+          post_request.append('paperID', '1')
+          post_request.append('commentID', this.comments[i].id)
+          post_request.append('isLike', '0')
+          post_request.append('sortedBy', 'time')
+          this.$http
+            .request({
+             url: this.$url + '/postLike',
+              method: 'post',
+              data: post_request,
+              headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            .then(function(response) {
+              console.log(response)
+            })
+            .catch(function(response) {
+              console.log(response)
+            })
+        }
+        item.isDislike = !item.isDislike;
+      }
+    },
     sendComment() {
       if (!this.replyComment) {
         this.$message({
