@@ -31,7 +31,7 @@ def searchPaper(request):
     query = request.GET.get('query','electron')
     sortBy = request.GET.get('sortBy','lastUpdatedDate')
     sortOrder = request.GET.get('sortOrder','ascending')
-    maxNum = request.GET.get('maxNum','10')
+    maxNum = request.GET.get('maxNum','200')
     url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + query + "&sortBy="+sortBy+"&sortOrder="+sortOrder+"&max_results="+maxNum
     '''
     url = 'http://export.arxiv.org/api/query?search_query=ti:%22electron%20thermal%20conductivity%22&sortBy=lastUpdatedDate&sortOrder=ascending'
@@ -131,12 +131,8 @@ def recommendPaper(request):
 # demo所需函数
 def choosePaper(request):
     return render(request, 'choose_paper.html')
-
-
 def editComment(request):
     return render(request, 'post_comment.html')
-
-
 def editReply(request):
     return render(request, 'post_reply.html')
 '''
@@ -356,10 +352,10 @@ def cancelLike(request):
     res = []
     paperID = request.POST.get('paperID', 'PAPERID')
     commentID = request.POST.get('commentID', 'COMMENTID')
-    isLike = request.POST.get('isLike', True)
+    isLike = request.POST.get('isLike', '1')
     sortedBy = request.POST.get('sortedBy', 'time')
     comment = models.CommentModel.objects.get(id=commentID)
-    if isLike:
+    if isLike == '1':
         comment.likeNum -= 1
         comment.hot -= 1
     else:

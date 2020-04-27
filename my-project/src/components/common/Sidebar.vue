@@ -58,69 +58,69 @@ export default {
             items: [
                 {
                     icon: 'el-icon-grape',
-                    index: '1',
+                    index: 'search?m=4&&k=Physics',
                     title: 'Physics',
                     subs: [
                         {
-                            index: '1-1',
+                            index: 'search?m=4&&k=astro-ph',
                             title: 'Astrophysics'
                         },
                         {
-                            index: '1-2',
+                            index: 'search?m=4&&k=cond-mat',
                             title: 'Condensed Matter',
                             
                         },
                         {
-                            index: '1-3',
+                            index: 'search?m=4&&k=gr-qc',
                             title: 'General Relativity and Quantum Cosmology'
                         },
                         {
-                            index: '1-4',
+                            index: 'search?m=4&&k=hep-ex',
                             title: 'High Energy Physics - Experiment',
                             
                         },
                         {
-                            index: '1-5',
+                            index: 'search?m=4&&k=hep-lat',
                             title: 'High Energy Physics - Lattice',
                             
                         },
                         {
-                            index: '1-6',
+                            index: 'search?m=4&&k=hep-ph',
                             title: 'High Energy Physics - Phenomenology',
                             
                         },
                         {
-                            index: '1-7',
+                            index: 'search?m=4&&k=hep-th',
                             title: 'High Energy Physics - Theory',
                             
                         },
                         {
-                            index: '1-8',
+                            index: 'search?m=4&&k=math-ph',
                             title: 'Mathematical Physics',
                             
                         },
                         {
-                            index: '1-9',
+                            index: 'search?m=4&&k=nlin',
                             title: 'Nonlinear Sciences',
                             
                         },
                         {
-                            index: '1-10',
+                            index: 'search?m=4&&k=nucl-ex',
                             title: 'Nuclear Experiment',
                             
                         },
                         {
-                            index: '1-11',
+                            index: 'search?m=4&&k=nucl-th',
                             title: 'Nuclear Theory',
                             
                         },
                         {
-                            index: '1-12',
+                            index: 'search?m=4&&k=physics',
                             title: 'Physics',
                             
                         },
                         {
-                            index: '1-13',
+                            index: 'search?m=4&&k=quant-ph',
                             title: 'Quantum Physics',
                             
                         },
@@ -128,50 +128,61 @@ export default {
                 },
                 {
                     icon: 'el-icon-watermelon',
-                    index: '2',
+                    index: 'search?m=4&&k=math',
                     title: 'Mathematics'
                 },
                 {
                     icon: 'el-icon-cherry',
-                    index: '3',
+                    index: 'search?m=4&&k=Computer Science',
                     title: 'Computer Science',
                     subs: [
                         {
-                            index: '3-1',
+                            index:'search?m=4&&k=CoRR ',
                             title: 'Computing Research Repository'
                         }
                     ]
                 },
                 {
                     icon: 'el-icon-apple',
-                    index: '4',
+                    index: 'search?m=4&&k=q-bio',
                     title: 'Quantitative Biology'
                     
                 },
                 {
                     icon: 'el-icon-pear',
-                    index: '5',
+                    index: 'search?m=4&&k=q-fin',
                     title: 'Quantitative Finance'
                 },
                 {
                     icon: 'el-icon-orange',
-                    index: '6',
+                    index: 'search?m=4&&k=stat',
                     title: 'Statistics'
                 },
                 {
                     icon: 'el-icon-lollipop',
-                    index: '7',
+                    index: 'search?m=4&&k=eess',
                     title: 'Electrical Engineering and Systems Science'
                 },
                 {
                     icon: 'el-icon-sugar',
-                    index: '8',
+                    index: 'search?m=4&&k=econ',
                     title: 'Economics'
                 }
                 
             ]
         };
     },
+	methods: {
+		/*
+		search_cat(e){
+			//console.log(e.target);
+			//console.log(e.currentTarget.getElementById("string"));
+			console(e);
+			var category=e;
+				
+		},		
+		*/
+	},
     computed: {
         onRoutes() {
             return this.$route.path.replace('/', '');
