@@ -77,12 +77,10 @@ export default {
 	openDialog (paper) {
 				//console.log("get!");
 				//this.$router.push({path: '/readpage' });
-		console.log(paper);
+		console.log(`dash: ${paper.pdfLink}`);
 		  this.$router.push({
-          path: '/readpage',
-          query: {
-            url:paper.pdfLink
-          }
+          name: 'readpage',
+          params: {url:paper.pdfLink}
 		  });
 		 }
    },

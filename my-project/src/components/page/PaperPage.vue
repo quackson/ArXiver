@@ -51,6 +51,10 @@ export default {
     }
   },
   created() {
+    console.log(this.$route.params.url);
+    this.url = this.$route.params.url;
+    this.src = this.url+'.pdf';
+    console.log(this.src);
     this.src = pdf.createLoadingTask(this.src) // 处理一下跨域
   },
   components: {
