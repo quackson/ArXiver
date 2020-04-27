@@ -31,7 +31,7 @@ def searchPaper(request):
     query = request.GET.get('query','electron')
     sortBy = request.GET.get('sortBy','lastUpdatedDate')
     sortOrder = request.GET.get('sortOrder','ascending')
-    maxNum = request.GET.get('maxNum','10')
+    maxNum = request.GET.get('maxNum','200')
     url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + query + "&sortBy="+sortBy+"&sortOrder="+sortOrder+"&max_results="+maxNum
     '''
     url = 'http://export.arxiv.org/api/query?search_query=ti:%22electron%20thermal%20conductivity%22&sortBy=lastUpdatedDate&sortOrder=ascending'
