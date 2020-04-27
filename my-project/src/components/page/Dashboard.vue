@@ -81,7 +81,7 @@ export default {
 		  this.$router.push({
           path: '/readpage',
           query: {
-            url:paper.id
+            url:paper.pdfLink
           }
 		  });
 		 }
