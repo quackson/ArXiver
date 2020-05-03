@@ -140,7 +140,7 @@ def editReply(request):
 
 # 根据评论ID获取回复
 # 非通信函数!!!
-def getCommentReply(commentID=1, sortedBy='time'):
+def getCommentReply(commentID=1, sortedBy='time', userID='1'):
     res = []
     replys = []
     if sortedBy == 'time':
@@ -164,17 +164,24 @@ def getCommentReply(commentID=1, sortedBy='time'):
                                                     'replyList'])
         reply['id'] = single_reply.id
         reply['pubTime'] = str(single_reply.pubTime)
+        reply['currentUserLike'] = '2'
+        if str(userID) in single_reply.likeUserIDList:
+            reply['currentUserLike'] = '0'
+        elif str(userID) in single_reply.dislikeUserIDList:
+            reply['currentUserLike'] = '1'
         res.append(reply)
     return res
 
 
 # 根据paperID获取评论
+# userID用来判断各个评论的点踩情况
 def getPaperComment(request):
     # for debug
     # return render(request, 'display_page.html')
     # paperID = 1
     res = []
     paperID = request.POST.get('paperID', 1)
+    userID = request.POST.get('userID', 1)
     # sortedBy = 'time'
     sortedBy = request.POST.get('sortedBy', 'time')
     # if sortedBy == 'time':
@@ -200,7 +207,12 @@ def getPaperComment(request):
                                                         'replyList'])
         comment['id'] = single_comment.id
         comment['pubTime'] = str(single_comment.pubTime)
-        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
+        comment['currentUserLike'] = '2'
+        if str(userID) in single_comment.likeUserIDList:
+            comment['currentUserLike'] = '0'
+        elif str(userID) in single_comment.dislikeUserIDList:
+            comment['currentUserLike'] = '1'
+        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment)
     print('成功获取评论')
     return HttpResponse(json.dumps({'comments': res}))
@@ -226,6 +238,8 @@ def postComment(request):
                                                      replyCommentID=-1,
                                                      replyNum=0,
                                                      avatar=avatar,
+                                                     likeUserIDList=['-1'],
+                                                     dislikeUserIDList=['-1'],
                                                      )
 
     # models.HeadPicture.objects.create(commentID=new_comment.id,
@@ -250,7 +264,12 @@ def postComment(request):
                                                         'replyList'])
         comment['id'] = single_comment.id
         comment['pubTime'] = str(single_comment.pubTime)
-        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
+        comment['currentUserLike'] = '2'
+        if str(userID) in single_comment.likeUserIDList:
+            comment['currentUserLike'] = '0'
+        elif str(userID) in single_comment.dislikeUserIDList:
+            comment['currentUserLike'] = '1'
+        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment)
 
     return HttpResponse(json.dumps({'comments': res}))
@@ -282,7 +301,10 @@ def postReply(request):
                                        dislikeNum=0,
                                        hot=0,
                                        replyCommentID=commentID,
-                                       replyCommentUserName=repliedName)
+                                       replyCommentUserName=repliedName,
+                                       likeUserIDList=['-1'],
+                                       dislikeUserIDList=['-1'],
+                                       )
     tmp_comment = models.CommentModel.objects.get(id=commentID)
     tmp_comment.replyNum += 1
     tmp_comment.save()
@@ -304,7 +326,12 @@ def postReply(request):
                                                         'replyList'])
         comment['id'] = single_comment.id
         comment['pubTime'] = str(single_comment.pubTime)
-        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
+        comment['currentUserLike'] = '2'
+        if str(userID) in single_comment.likeUserIDList:
+            comment['currentUserLike'] = '0'
+        elif str(userID) in single_comment.dislikeUserIDList:
+            comment['currentUserLike'] = '1'
+        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment)
     return HttpResponse(json.dumps({'comments': res}))
 
@@ -313,6 +340,7 @@ def postReply(request):
 def postLike(request):
     res = []
     paperID = request.POST.get('paperID', 'PAPERID')
+    userID = request.POST.get('userID', '1')
     commentID = request.POST.get('commentID', 'COMMENTID')
     isLike = request.POST.get('isLike', '1')
     sortedBy = request.POST.get('sortedBy', 'time')
@@ -320,9 +348,13 @@ def postLike(request):
     if isLike == '1':
         comment.likeNum += 1
         comment.hot += 1
+        if str(userID) not in comment.likeUserIDList:
+            comment.likeUserIDList.append(str(userID))
     else:
         comment.dislikeNum += 1
         comment.hot -= 1
+        if str(userID) not in comment.dislikeUserIDList:
+            comment.dislikeUserIDList.append(str(userID))
     comment.save()
     comments = models.CommentModel.objects.filter(paperID=paperID)
     for single_comment in comments:
@@ -342,7 +374,12 @@ def postLike(request):
                                                          'replyList'])
         comment_['id'] = single_comment.id
         comment_['pubTime'] = str(single_comment.pubTime)
-        comment_['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
+        comment_['currentUserLike'] = '2'
+        if str(userID) in single_comment.likeUserIDList:
+            comment_['currentUserLike'] = '0'
+        elif str(userID) in single_comment.dislikeUserIDList:
+            comment_['currentUserLike'] = '1'
+        comment_['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment_)
     return HttpResponse(json.dumps({'comments': res}))
 
@@ -351,6 +388,7 @@ def postLike(request):
 def cancelLike(request):
     res = []
     paperID = request.POST.get('paperID', 'PAPERID')
+    userID = request.POST.get('userID', '1')
     commentID = request.POST.get('commentID', 'COMMENTID')
     isLike = request.POST.get('isLike', '1')
     sortedBy = request.POST.get('sortedBy', 'time')
@@ -358,9 +396,13 @@ def cancelLike(request):
     if isLike == '1':
         comment.likeNum -= 1
         comment.hot -= 1
+        if str(userID) in comment.likeUserIDList:
+            comment.likeUserIDList.remove(str(userID))
     else:
         comment.dislikeNum -= 1
         comment.hot += 1
+        if str(userID) in comment.dislikeUserIDList:
+            comment.dislikeUserIDList.remove(str(userID))
     comment.save()
     comments = models.CommentModel.objects.filter(paperID=paperID)
     for single_comment in comments:
@@ -380,7 +422,12 @@ def cancelLike(request):
                                                          'replyList'])
         comment_['id'] = single_comment.id
         comment_['pubTime'] = str(single_comment.pubTime)
-        comment_['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy)
+        comment_['currentUserLike'] = '2'
+        if str(userID) in single_comment.likeUserIDList:
+            comment_['currentUserLike'] = '0'
+        elif str(userID) in single_comment.dislikeUserIDList:
+            comment_['currentUserLike'] = '1'
+        comment_['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment_)
     return HttpResponse(json.dumps({'comments': res}))
 
