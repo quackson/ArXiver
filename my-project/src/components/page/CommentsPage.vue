@@ -148,6 +148,7 @@ export default {
         },
       ],
       value: 'time',
+      paperID: '',
       btnShow: false,
       index: '0',
       replyComment: '',
@@ -160,6 +161,8 @@ export default {
   },
   directives: { clickoutside },
   created() {
+    this.paperID = this.$route.params.id;
+    console.log(this.$route.params.id);
     this.initpage();
   },
   watch : {
@@ -173,7 +176,7 @@ export default {
       let _this = this
       this.$http
       .request({
-        url: _this.$url + '/getPaperComment?paperID=1&userID='+this.myID+'&sortedBy=' + this.value,
+        url: _this.$url + '/getPaperComment?paperID=' + this.paperID + '&userID='+this.myID+'&sortedBy=' + this.value,
         method: 'get',
       })
       .then(function(response) {
@@ -213,7 +216,7 @@ export default {
         item.currentUserLike = '0'
         item.likeNum++
         var post_request = new FormData()
-        post_request.append('paperID', '1')
+        post_request.append('paperID', this.paperID)
         post_request.append('userID', this.myID)
         post_request.append('commentID', this.comments[i].id)
         post_request.append('isLike', '1')
@@ -235,7 +238,7 @@ export default {
           item.currentUserLike = '2'
           item.likeNum--
           var post_request = new FormData()
-          post_request.append('paperID', '1')
+          post_request.append('paperID', this.paperID)
           post_request.append('userID', this.myID)
           post_request.append('commentID', this.comments[i].id)
           post_request.append('isLike', '1')
@@ -261,7 +264,7 @@ export default {
         item.currentUserLike = '1'
         item.dislikeNum++
         var post_request = new FormData()
-        post_request.append('paperID', '1')
+        post_request.append('paperID', this.paperID)
         post_request.append('userID', this.myID)
         post_request.append('commentID', this.comments[i].id)
         post_request.append('isLike', '0')
@@ -283,7 +286,7 @@ export default {
           item.currentUserLike = '2'
           item.dislikeNum--
           var post_request = new FormData()
-          post_request.append('paperID', '1')
+          post_request.append('paperID', this.paperID)
           post_request.append('userID', this.myID)
           post_request.append('commentID', this.comments[i].id)
           post_request.append('isLike', '0')
@@ -325,7 +328,7 @@ export default {
         this.comments.push(a)
 
         var post_request = new FormData()
-        post_request.append('paperID', '1')
+        post_request.append('paperID', this.paperID)
         post_request.append('userID', this.myID)
         post_request.append('userName', this.myName)
         post_request.append('contentView', this.replyComment)
@@ -370,7 +373,7 @@ export default {
         this.comments[i].replyList.push(a)
 
         var post_request = new FormData()
-        post_request.append('paperID', '1')
+        post_request.append('paperID', this.paperID)
         post_request.append('userID', this.myID)
         post_request.append('userName', this.myName)
         post_request.append('sortedBy', this.value)
@@ -449,14 +452,15 @@ export default {
     .reply-info
         display inline-block
         margin-left 5px
-        width 90%
+        width 200px
         @media screen and (max-width:1200px) {
-            width 80%
+            width 200px
         }
         .reply-input
             min-height 20px
             line-height 22px
             padding 10px 10px
+            width 200px
             color #ccc
             background-color #fff
             border-radius 5px
@@ -519,8 +523,12 @@ export default {
             margin 0 5px
     .talk-box
         margin 0 50px
+        width 150px
         >p
            margin 0
+           width 150px
+           word-wrap:break-word; 
+           word-break:break-all;
         .reply
             font-size 16px
             color #000

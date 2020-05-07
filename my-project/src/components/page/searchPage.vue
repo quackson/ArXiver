@@ -80,7 +80,7 @@ export default {
 		console.log(`dash: ${paper.pdfLink}`);
 		  this.$router.push({
           name: 'readpage',
-          params: {url:paper.pdfLink}
+          params: {url:paper.pdfLink,id:paper.id}
 		  });
 		 },
 		 getData(qstr){
