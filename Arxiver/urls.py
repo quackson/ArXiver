@@ -7,7 +7,7 @@ urlpatterns = [
     path('searchPaper',views.searchPaper,name = 'searchPaper'),
     path('getPdfFile',views.showPaper,name = 'showPaper'),
     path('getRecommendation',views.recommendPaper,name = 'recommendPaper'),
-    
+    path('getPaperNum',views.getPaperNum),
     #path('choose_paper/', views.choosePaper, name='choose_paper'),
     path('getPaperComment', views.getPaperComment, name='display_page'),
     #path('edit_comment/', views.editComment, name='edit_comment'),  # 进入添加评论的页面

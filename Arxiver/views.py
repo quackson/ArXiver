@@ -9,22 +9,50 @@ import os
 from . import models
 import hashlib
 from django.forms.models import model_to_dict
+'''
+import jaro
+'''
 
 class Paper:
-        def __init__(self):
-                self.author = []
-                self.id = None
-                self.updatedTime = None
-                self.publishedTime = None
-                self.title = None
-                self.summary = None
-                self.category = []
-                self.doiLink = None
-                self.paperLink = None
-                self.pdfLink = None
+    def __init__(self):
+        self.author = []
+        self.score = 0
+        self.id = None
+        self.updatedTime = None
+        self.publishedTime = None
+        self.title = None
+        self.summary = None
+        self.category = []
+        self.doiLink = None
+        self.paperLink = None
+        self.pdfLink = None
+    def __cmp__(self,other):
+        return cmp(self.score,other.score)    
 
 def index(request):
     return HttpResponse(json.dumps('Hello World'))
+
+
+def getPaperNum(request):
+    method = request.GET.get('method','ti')
+    query = request.GET.get('query','electron artificial human dioxide geometry part teacher animal this is only for test')
+    sortBy = request.GET.get('sortBy','lastUpdatedDate')
+    sortOrder = request.GET.get('sortOrder','ascending')
+    maxNum = '1000'
+    url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + query + "&sortBy="+sortBy+"&sortOrder="+sortOrder+"&max_results="+maxNum
+    try:
+        res = requests.get(url)
+    except:
+        res = dict()
+        res['retCode'] = 404
+        res = json.dump(res)
+        return HttpResponse(json.dumps(res))
+    data = res.text
+    soup = bs(data,'lxml')
+    entries = soup.find_all('entry')
+    PaperNum = len(entries)
+    return HttpResponse(json.dumps({'retCode':200,'num':PaperNum}))
+    
 
 def searchPaper(request):
     method = request.GET.get('method','ti')
@@ -119,12 +147,69 @@ def showPaper(request):
 
 
 def recommendPaper(request):
+    return HttpResponse('not finished yet')
+    '''
     user = request.GET.get('user')
+    records = getUserRecords(user)
+    fields = getUserFields(user)
+    papers = []
+    for cat in fields:
+        url = "http://export.arxiv.org/api/query?search_query=cat:" + cat+ "&sortBy=submittedDate&sortOrder=ascending&max_results=50"
+        res = requests.get(url)
+        data = res.text
+        soup = bs(data,'lxml')
+        entries = soup.find_all('entry')
+        for entry in entries:
+            newPaper = Paper()
+            newPaper.id = entry.id.string
+            newPaper.updatedTime = entry.updated.string
+            newPaper.publishedTime = entry.published.string
+            newPaper.title = entry.title.string
+            newPaper.summary = entry.summary.string
+            authors = entry.find_all('author')
+            for author in authors:
+                newPaper.author.append(author.contents[1].string)
+            categories = entry.find_all('category')
+            for category in categories:
+                newPaper.category.append(category.get('term'))
+            links = entry.find_all('link')
+            for link in links:
+                if link.get('title')=='doi':
+                    newPaper.doiLink = link.get('href')
+                elif link.get('title')=='pdf':
+                    newPaper.pdfLink = link.get('href')
+                else:
+                    newPaper.paperLink = link.get('href')
+            papers.append(newPaper)
+    for paper in papers:
+        for record in records:
+            paper.score+=jaro.jaro_winkler_metric(paper.summary, record.summary)
+    papers.sort()
+    papers = papers[:25]
+    res = dict()
+    res['resCode'] = 200
+    res['len'] = len(papers)
+    res['papers'] = []
+    for paper in papers:
+        p = dict()
+        p['author'] = ''
+        for author in paper.author:
+            p['author']+=(author+'/')
+        p['id'] = paper.id
+        p['updatedTime'] = paper.publishedTime
+        p['title'] = paper.title
+        p['summary'] = paper.summary
+        p['category'] = ''
+        for category in paper.category:
+            p['category'] +=(category+'/')
+        p['doiLink'] = paper.doiLink
+        p['paperLink'] = paper.paperLink
+        p['pdfLink'] = paper.pdfLink
+        res['papers'].append(p)
+    res = json.dumps(res)
+    return HttpResponse(res)
     '''
-    获取user阅读记录
-    根据阅读记录与其他用户计算相似度
-    推荐相似度最高的用户的记录
-    '''
+    
     
 
 '''
