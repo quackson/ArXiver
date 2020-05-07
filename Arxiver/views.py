@@ -9,25 +9,20 @@ import os
 from . import models
 import hashlib
 from django.forms.models import model_to_dict
-'''
-import jaro
-'''
+'''import jaro'''
 
 class Paper:
-    def __init__(self):
-        self.author = []
-        self.score = 0
-        self.id = None
-        self.updatedTime = None
-        self.publishedTime = None
-        self.title = None
-        self.summary = None
-        self.category = []
-        self.doiLink = None
-        self.paperLink = None
-        self.pdfLink = None
-    def __cmp__(self,other):
-        return cmp(self.score,other.score)    
+        def __init__(self):
+                self.author = []
+                self.id = None
+                self.updatedTime = None
+                self.publishedTime = None
+                self.title = None
+                self.summary = None
+                self.category = []
+                self.doiLink = None
+                self.paperLink = None
+                self.pdfLink = None
 
 def index(request):
     return HttpResponse(json.dumps('Hello World'))
@@ -52,7 +47,6 @@ def getPaperNum(request):
     entries = soup.find_all('entry')
     PaperNum = len(entries)
     return HttpResponse(json.dumps({'retCode':200,'num':PaperNum}))
-    
 
 def searchPaper(request):
     method = request.GET.get('method','ti')
