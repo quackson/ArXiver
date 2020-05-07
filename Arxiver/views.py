@@ -180,16 +180,19 @@ def getPaperComment(request):
     # return render(request, 'display_page.html')
     # paperID = 1
     res = []
-    paperID = request.POST.get('paperID', 1)
-    userID = request.POST.get('userID', 1)
+    paperID = request.GET.get('paperID', 1)
+    userID = request.GET.get('userID', 1)
     # sortedBy = 'time'
-    sortedBy = request.POST.get('sortedBy', 'time')
-    # if sortedBy == 'time':
+    sortedBy = request.GET.get('sortedBy', 'time')
+    # print(paperID)
+    # print(userID)
+    # print(sortedBy)
+    # sortedBy == 'time':
     # 根据发布时间进行排序
-    comments = models.CommentModel.objects.order_by('-pubTime', 'hot').filter(paperID=paperID)
+    comments = models.CommentModel.objects.filter(paperID=paperID).order_by('-pubTime')
     # 根据热度进行排序
     if sortedBy == 'hot':
-        comments = models.CommentModel.objects.filter(paperID=paperID).order_by('hot', '-pubTime')
+        comments = models.CommentModel.objects.filter(paperID=paperID).order_by('-hot')
     for single_comment in comments:
         comment = model_to_dict(single_comment, fields=['id',
                                                         'userName',
@@ -222,12 +225,12 @@ def getPaperComment(request):
 def postComment(request):
     # print('开始添加评论')
     res = []
-    paperID = request.POST.get('paperID', 'PAPERID')
-    userID = request.POST.get('userID', 'USERID')
-    userName = request.POST.get('userName', 'USERNAME')
-    contentView = request.POST.get('contentView', 'CONTENTVIEW')
-    sortedBy = request.POST.get('sortedBy', 'SORTEDBY')
-    avatar = request.POST.get('avatar', 'AVATAR')
+    paperID = request.GET.get('paperID', 'PAPERID')
+    userID = request.GET.get('userID', 'USERID')
+    userName = request.GET.get('userName', 'USERNAME')
+    contentView = request.GET.get('contentView', 'CONTENTVIEW')
+    sortedBy = request.GET.get('sortedBy', 'SORTEDBY')
+    avatar = request.GET.get('avatar', 'AVATAR')
     new_comment = models.CommentModel.objects.create(paperID=paperID,
                                                      userID=userID,
                                                      userName=userName,
@@ -286,13 +289,13 @@ def getCommentAvatar(request):
 # 进行回复
 def postReply(request):
     res = []
-    paperID = request.POST.get('paperID', 'PAPERID')
-    userID = request.POST.get('userID', 'USERID')
-    userName = request.POST.get('userName', 'USERNAME')
-    sortedBy = request.POST.get('sortedBy', 'SORTEDBY')
-    commentID = request.POST.get('commentID', 1)
-    contentView = request.POST.get('contentView', 'CONTENTVIEW')
-    repliedName = request.POST.get('repliedName', 'REPLIEDNAME')
+    paperID = request.GET.get('paperID', 'PAPERID')
+    userID = request.GET.get('userID', 'USERID')
+    userName = request.GET.get('userName', 'USERNAME')
+    sortedBy = request.GET.get('sortedBy', 'SORTEDBY')
+    commentID = request.GET.get('commentID', 1)
+    contentView = request.GET.get('contentView', 'CONTENTVIEW')
+    repliedName = request.GET.get('repliedName', 'REPLIEDNAME')
     models.CommentModel.objects.create(paperID='reply',
                                        userID=userID,
                                        userName=userName,
@@ -339,11 +342,11 @@ def postReply(request):
 # 点踩功能
 def postLike(request):
     res = []
-    paperID = request.POST.get('paperID', 'PAPERID')
-    userID = request.POST.get('userID', '1')
-    commentID = request.POST.get('commentID', 'COMMENTID')
-    isLike = request.POST.get('isLike', '1')
-    sortedBy = request.POST.get('sortedBy', 'time')
+    paperID = request.GET.get('paperID', 'PAPERID')
+    userID = request.GET.get('userID', '1')
+    commentID = request.GET.get('commentID', 'COMMENTID')
+    isLike = request.GET.get('isLike', '1')
+    sortedBy = request.GET.get('sortedBy', 'time')
     comment = models.CommentModel.objects.get(id=commentID)
     if isLike == '1':
         comment.likeNum += 1
@@ -387,11 +390,11 @@ def postLike(request):
 # 取消点踩
 def cancelLike(request):
     res = []
-    paperID = request.POST.get('paperID', 'PAPERID')
-    userID = request.POST.get('userID', '1')
-    commentID = request.POST.get('commentID', 'COMMENTID')
-    isLike = request.POST.get('isLike', '1')
-    sortedBy = request.POST.get('sortedBy', 'time')
+    paperID = request.GET.get('paperID', 'PAPERID')
+    userID = request.GET.get('userID', '1')
+    commentID = request.GET.get('commentID', 'COMMENTID')
+    isLike = request.GET.get('isLike', '1')
+    sortedBy = request.GET.get('sortedBy', 'time')
     comment = models.CommentModel.objects.get(id=commentID)
     if isLike == '1':
         comment.likeNum -= 1
