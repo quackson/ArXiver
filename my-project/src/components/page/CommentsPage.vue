@@ -2,13 +2,12 @@
   <div class="wrapper">
     <el-main class="col2">
       <div class="comment">
-        <el-select v-model="value" placeholder="排序方式" size="mini" style="padding-top: 10px;float:right;">
+        <el-select v-model="value" placeholder="时间" size="mini" style="padding-top: 10px;float:right;">
           <el-option
             v-for="item in options"
             :key="item.value"
             :label="item.label"
             :value="item.value"
-            :disabled="item.disabled"
           >
           </el-option>
         </el-select>
@@ -40,12 +39,14 @@
             <span @click="showReplyInput(i, item.name, item.id)"
               ><i class="iconfont el-icon-s-comment"></i>{{ item.replyNum }}</span
             >
-            <span class="like" :class="{active: item.isLike}" @click="likeClick(i, item)">
-              <i class="iconfont el-icon-star-off"></i>
+            <span class="like" @click="likeClick(i, item)">
+              <i v-if = "item.currentUserLike == '0'" class="iconfont el-icon-star-on"></i>
+              <i v-else class="iconfont el-icon-star-off"></i>
               {{ item.likeNum }}
             </span>
-            <span class="dislike" :class="{active: item.isDislike}" @click="dislikeClick(i, item)">
-              <i class="iconfont el-icon-close"></i>
+            <span class="dislike" @click="dislikeClick(i, item)">
+              <i v-if = "item.currentUserLike == '1'" class="iconfont el-icon-error"></i>
+              <i v-else class="iconfont el-icon-close"></i>
               {{ item.dislikeNum }}
             </span>
           </div>
@@ -63,12 +64,14 @@
               </div>
               <div class="icon-btn">
                 <span @click="showReplyInput(i, reply.userNmae, reply.id)"></span>
-                <span class="like" :class="{active: reply.isLike}" @click="likeClick(j, reply)">
-                  <i class="iconfont el-icon-star-off"></i>
+                <span class="like" @click="likeClick(j, reply)">
+                  <i v-if = "reply.currentUserLike == '0'" class="iconfont el-icon-star-on"></i>
+                  <i v-else class="iconfont el-icon-star-off"></i>
                   {{ reply.likeNum }}
                 </span>
-                <span class="dislike" :class="{active: reply.isDislike}" @click="dislikeClick(j, reply)">
-                  <i class="iconfont el-icon-close"></i>
+                <span class="dislike" @click="dislikeClick(j, reply)">
+                  <i v-if = "reply.currentUserLike == '1'" class="iconfont el-icon-error"></i>
+                  <i v-else class="iconfont el-icon-close"></i>
                   {{ reply.dislikeNum }}
                 </span>
               </div>
@@ -136,14 +139,15 @@ export default {
     return {
       options: [
         {
-          value: '1',
+          value: 'time',
           label: '时间',
         },
         {
-          value: '2',
+          value: 'hot',
           label: '热度',
         },
       ],
+      value: 'time',
       btnShow: false,
       index: '0',
       replyComment: '',
@@ -155,11 +159,21 @@ export default {
     }
   },
   directives: { clickoutside },
-  mounted() {
-    let _this = this
-    this.$http
+  created() {
+    this.initpage();
+  },
+  watch : {
+    value(value, oldvalue) {
+      this.value = value;
+      this.initpage();
+    }
+  },
+  methods: {
+    initpage() {
+      let _this = this
+      this.$http
       .request({
-        url: _this.$url + '/getPaperComment?paperID=1&sortedBy=time',
+        url: _this.$url + '/getPaperComment?paperID=1&userID='+this.myID+'&sortedBy=' + this.value,
         method: 'get',
       })
       .then(function(response) {
@@ -169,8 +183,7 @@ export default {
       .catch(function(response) {
         console.log(response)
       })
-  },
-  methods: {
+    },
     inputFocus() {
       var replyInput = document.getElementById('replyInput')
       replyInput.style.padding = '8px 8px'
@@ -196,14 +209,15 @@ export default {
       return this.comments[i].inputShow
     },
     likeClick(i, item) {
-      if (item.isLike === null) {
-        Vue.$set(item, "isLike", true);
+      if (item.currentUserLike === '2') {
+        item.currentUserLike = '0'
         item.likeNum++
         var post_request = new FormData()
         post_request.append('paperID', '1')
+        post_request.append('userID', this.myID)
         post_request.append('commentID', this.comments[i].id)
         post_request.append('isLike', '1')
-        post_request.append('sortedBy', 'time')
+        post_request.append('sortedBy', this.value)
         this.$http
           .request({
             url: this.$url + '/postLike',
@@ -217,14 +231,15 @@ export default {
           .catch(function(response) {
             console.log(response)
           })
-      } else {
-        if (item.isLike) {
+      } else if(item.currentUserLike === '0'){
+          item.currentUserLike = '2'
           item.likeNum--
           var post_request = new FormData()
           post_request.append('paperID', '1')
+          post_request.append('userID', this.myID)
           post_request.append('commentID', this.comments[i].id)
           post_request.append('isLike', '1')
-          post_request.append('sortedBy', 'time')
+          post_request.append('sortedBy', this.value)
           this.$http
             .request({
              url: this.$url + '/cancelLike',
@@ -238,39 +253,19 @@ export default {
             .catch(function(response) {
               console.log(response)
             })
-        } else {
-          item.likeNum++
-          var post_request = new FormData()
-          post_request.append('paperID', '1')
-          post_request.append('commentID', this.comments[i].id)
-          post_request.append('isLike', '1')
-          post_request.append('sortedBy', 'time')
-          this.$http
-            .request({
-             url: this.$url + '/postLike',
-              method: 'post',
-              data: post_request,
-              headers: { 'Content-Type': 'multipart/form-data' },
-            })
-            .then(function(response) {
-              console.log(response)
-            })
-            .catch(function(response) {
-              console.log(response)
-            })
-        }
+        } 
         item.isLike = !item.isLike;
-      }
     },
     dislikeClick(i, item) {
-      if (item.isDislike === null) {
-        Vue.$set(item, "isDislike", true);
+      if (item.currentUserLike === '2') {
+        item.currentUserLike = '1'
         item.dislikeNum++
         var post_request = new FormData()
         post_request.append('paperID', '1')
+        post_request.append('userID', this.myID)
         post_request.append('commentID', this.comments[i].id)
         post_request.append('isLike', '0')
-        post_request.append('sortedBy', 'time')
+        post_request.append('sortedBy', this.value)
         this.$http
           .request({
             url: this.$url + '/postLike',
@@ -284,14 +279,15 @@ export default {
           .catch(function(response) {
             console.log(response)
           })
-      } else {
-        if (item.isDislike) {
+      } else if(item.currentUserLike === '1'){
+          item.currentUserLike = '2'
           item.dislikeNum--
           var post_request = new FormData()
           post_request.append('paperID', '1')
+          post_request.append('userID', this.myID)
           post_request.append('commentID', this.comments[i].id)
           post_request.append('isLike', '0')
-          post_request.append('sortedBy', 'time')
+          post_request.append('sortedBy', this.value)
           this.$http
             .request({
              url: this.$url + '/cancelLike',
@@ -305,29 +301,7 @@ export default {
             .catch(function(response) {
               console.log(response)
             })
-        } else {
-          item.dislikeNum++
-          var post_request = new FormData()
-          post_request.append('paperID', '1')
-          post_request.append('commentID', this.comments[i].id)
-          post_request.append('isLike', '0')
-          post_request.append('sortedBy', 'time')
-          this.$http
-            .request({
-             url: this.$url + '/postLike',
-              method: 'post',
-              data: post_request,
-              headers: { 'Content-Type': 'multipart/form-data' },
-            })
-            .then(function(response) {
-              console.log(response)
-            })
-            .catch(function(response) {
-              console.log(response)
-            })
-        }
-        item.isDislike = !item.isDislike;
-      }
+        } 
     },
     sendComment() {
       if (!this.replyComment) {
@@ -355,7 +329,7 @@ export default {
         post_request.append('userID', this.myID)
         post_request.append('userName', this.myName)
         post_request.append('contentView', this.replyComment)
-        post_request.append('sortedBy', 'time')
+        post_request.append('sortedBy', this.value)
         post_request.append('avatar', 'avatar')
         this.replyComment = ''
         input.innerHTML = ''
@@ -399,7 +373,7 @@ export default {
         post_request.append('paperID', '1')
         post_request.append('userID', this.myID)
         post_request.append('userName', this.myName)
-        post_request.append('sortedBy', 'time')
+        post_request.append('sortedBy', this.value)
         post_request.append('commentID', this.comments[i].id)
         post_request.append('contentView', this.replyComment)
         post_request.append('repliedName', this.myName)

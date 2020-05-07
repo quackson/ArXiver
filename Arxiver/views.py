@@ -180,16 +180,19 @@ def getPaperComment(request):
     # return render(request, 'display_page.html')
     # paperID = 1
     res = []
-    paperID = request.POST.get('paperID', 1)
-    userID = request.POST.get('userID', 1)
+    paperID = request.GET.get('paperID', 1)
+    userID = request.GET.get('userID', 1)
     # sortedBy = 'time'
-    sortedBy = request.POST.get('sortedBy', 'time')
-    # if sortedBy == 'time':
+    sortedBy = request.GET.get('sortedBy', 'time')
+    # print(paperID)
+    # print(userID)
+    # print(sortedBy)
+    # sortedBy == 'time':
     # 根据发布时间进行排序
-    comments = models.CommentModel.objects.order_by('-pubTime', 'hot').filter(paperID=paperID)
+    comments = models.CommentModel.objects.filter(paperID=paperID).order_by('-pubTime')
     # 根据热度进行排序
     if sortedBy == 'hot':
-        comments = models.CommentModel.objects.filter(paperID=paperID).order_by('hot', '-pubTime')
+        comments = models.CommentModel.objects.filter(paperID=paperID).order_by('-hot')
     for single_comment in comments:
         comment = model_to_dict(single_comment, fields=['id',
                                                         'userName',
@@ -345,6 +348,9 @@ def postLike(request):
     isLike = request.POST.get('isLike', '1')
     sortedBy = request.POST.get('sortedBy', 'time')
     comment = models.CommentModel.objects.get(id=commentID)
+    # print(paperID)
+    # print(userID)
+    # print(commentID)
     if isLike == '1':
         comment.likeNum += 1
         comment.hot += 1
