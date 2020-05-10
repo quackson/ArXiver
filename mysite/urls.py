@@ -19,10 +19,11 @@ from django.views.generic.base import TemplateView
 
 from django.views import static ##新增
 from django.conf import settings ##新增
+from django.conf.urls.static import static as st
 
 urlpatterns = [
     path('Arxiver/', include('Arxiver.urls')),
     path('admin/', admin.site.urls),
     path(r'^static/(?P<path>.*)', static.serve,{'document_root': settings.STATIC_ROOT}, name='static'),
     path(r'', TemplateView.as_view(template_name="index.html")),
-]
+] + st(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
