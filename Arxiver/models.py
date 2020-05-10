@@ -84,7 +84,7 @@ class HeadPicture(models.Model):
         return self.commentID
 '''
 
-
+'''
 class UserInfo(models.Model):
     username = models.CharField(max_length=32, unique=True)
 
@@ -95,3 +95,25 @@ class UserToken(models.Model):
     user = models.OneToOneField(UserInfo, null=True, on_delete=models.CASCADE)
 
     token = models.CharField(max_length=64)
+'''
+
+
+class UserModel(models.Model):
+    userName = models.CharField(max_length=32, default='userName')  # 登录用户名
+    password = models.CharField(max_length=32, default='000000')  # 登陆密码
+
+    profession = models.CharField(max_length=32, default='undefined')  # 职业
+    email = models.CharField(max_length=32, default='undefined')  # 电子邮件
+    phoneNumber = models.CharField(max_length=32, default='undefined')  # 电话号码
+    area = models.CharField(max_length=32, default='undefined')  # 地区
+    personHomepage = models.CharField(max_length=200, default='undefined')  # 个人主页
+    note = models.TextField(default='undefined')  # 备注
+    headImg = models.ImageField(upload_to="img/")  # 头像
+
+    isOnline = models.IntegerField(default=0)
+
+    collectList = ListField()  # 收藏夹，存储paper的url
+    focusDict = models.TextField()  # 关注领域，存储str格式的字典
+
+    def __str__(self):
+        return self.userName

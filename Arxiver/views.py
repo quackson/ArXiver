@@ -10,6 +10,7 @@ from . import models
 import hashlib
 from django.forms.models import model_to_dict
 '''import jaro'''
+import ast
 
 class Paper:
         def __init__(self):
@@ -516,7 +517,7 @@ def cancelLike(request):
         res.append(comment_)
     return HttpResponse(json.dumps({'comments': res}))
 
-
+'''
 def register(request): # 等同于if request.method == 'POST':
     ret = {'code': 1000, 'msg': None} 
     try:
@@ -554,3 +555,242 @@ def login(request):
         ret['code'] = 1002
         ret['msg'] = 'getting username or password error or database error'
     return HttpResponse(json.dumps(ret))
+'''
+
+
+# 注册
+def register(request):
+    userName = request.POST.get('userName', 'username')
+    password = request.POST.get('password', 'xxx')
+    # email = request.POST.get('email', 'undefined')
+
+    res = {'retCode': 0, 'message': ''}
+
+    obj = models.UserModel.objects.filter(userName=userName)
+    if obj.count() == 0:
+        models.UserModel.objects.create(userName=userName, password=password,
+                                        collectList=['-1'], focusDict=str({}))
+        obj = models.UserModel.objects.get(userName=userName)
+        #obj.collectList.remove('-1')
+        obj.save()
+        res['retCode'] = 1
+        res['message'] = '注册成功'
+    else:
+        res['retCode'] = 0
+        res['message'] = '用户名已注册'
+    return HttpResponse(json.dumps({'register': res}))
+
+
+# 登录
+def login(request):
+    userName = request.POST.get('userName', 'username')
+    password = request.POST.get('password', 'xxx')
+
+    res = {'retCode': 0, 'message': ''}
+    obj = models.UserModel.objects.filter(userName=userName)
+
+    if obj.count() == 0:
+        res['retCode'] = 0
+        res['message'] = '用户不存在'
+    else:
+        obj = models.UserModel.objects.get(userName=userName)
+        if obj.password == password:
+            res['retCode'] = 1
+            res['message'] = '成功登录'
+        else:
+            res['retCode'] = 2
+            res['message'] = '密码错误'
+    return HttpResponse(json.dumps({'login': res}))
+
+
+# 获取个人信息
+def getUserInformation(request):
+    userName = request.POST.get('userName', 'username')
+
+    obj = models.UserModel.objects.get(userName=userName)
+
+    res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
+                                     'area', 'personHomepage', 'note', 'isOnline'])
+    res['collectList'] = []
+    for url in obj.collectList:
+        res['collectList'].append(url)
+    res['focusDict'] = ast.literal_eval(obj.focusDict)
+
+    return HttpResponse(json.dumps({'userInfo': res}))
+
+
+# 修改个人信息
+def modifyUserInformation(request):
+    userName = request.POST.get('userName', '')
+    password = request.POST.get('password', '')
+    profession = request.POST.get('profession', '')
+    email = request.POST.get('email', '')
+    phoneNumber = request.POST.get('phoneNumber', '')
+    area = request.POST.get('area', '')
+    personHomepage = request.POST.get('personHomepage', '')
+    note = request.POST.get('note', '')
+
+    obj = models.UserModel.objects.get(userName=userName)
+    if password != '':
+        obj.password = password
+        obj.save()
+    if profession != '':
+        obj.profession = profession
+        obj.save()
+    if email != '':
+        obj.email = email
+        obj.save()
+    if phoneNumber != '':
+        obj.phoneNumber = phoneNumber
+        obj.save()
+    if area != '':
+        obj.area = area
+        obj.save()
+    if personHomepage != '':
+        obj.personHomepage = personHomepage
+        obj.save()
+    if note != '':
+        obj.note = note
+        obj.save()
+
+    obj = models.UserModel.objects.get(userName=userName)
+    res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
+                                     'area', 'personHomepage', 'note', 'isOnline'])
+    res['collectList'] = []
+    for url in obj.collectList:
+        res['collectList'].append(url)
+    res['focusDict'] = ast.literal_eval(obj.focusDict)
+    return HttpResponse(json.dumps({'userInfo': res}))
+
+
+# 点关注
+def addFocus(request):
+    userName = request.POST.get('userName', '')
+    field_1 = request.POST.get('field_1', '')
+    field_2 = request.POST.get('field_2', '')
+    level = request.POST.get('level', '')
+    obj = models.UserModel.objects.get(userName=userName)
+
+    # 关注一级学科
+    if str(level) == '1':
+        tmpFocus = ast.literal_eval(obj.focusDict)  # str2dict
+        if field_1 not in tmpFocus:
+            tmpFocus[field_1] = []
+            obj.focusDict = str(tmpFocus)
+            obj.save()
+    # 关注二级学科
+    else:
+        tmpFocus = ast.literal_eval(obj.focusDict)
+        if field_1 not in tmpFocus:
+            tmpFocus[field_1] = [field_2]
+        else:
+            if field_2 not in tmpFocus[field_1]:
+                tmpFocus[field_1].append(field_2)
+        obj.focusDict = str(tmpFocus)
+        obj.save()
+
+    obj = models.UserModel.objects.get(userName=userName)
+    res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
+                                     'area', 'personHomepage', 'note', 'isOnline'])
+    res['collectList'] = []
+    for url in obj.collectList:
+        res['collectList'].append(url)
+    res['focusDict'] = ast.literal_eval(obj.focusDict)
+    return HttpResponse(json.dumps({'userInfo': res}))
+
+
+# 取消关注
+def cancelFocus(request):
+    userName = request.POST.get('userName', '')
+    field_1 = request.POST.get('field_1', '')
+    field_2 = request.POST.get('field_2', '')
+    level = request.POST.get('level', '')
+    obj = models.UserModel.objects.get(userName=userName)
+
+    # 取消关注一级学科
+    if str(level) == '1':
+        tmpFocus = ast.literal_eval(obj.focusDict)
+        if field_1 in tmpFocus:
+            tmpFocus.pop(field_1)
+            obj.focusDict = str(tmpFocus)
+            obj.save()
+    # 取消关注二级学科
+    else:
+        tmpFocus = ast.literal_eval(obj.focusDict)
+        if field_1 in tmpFocus:
+            if field_2 in tmpFocus[field_1]:
+                tmpFocus[field_1].remove(field_2)
+        obj.focusDict = str(tmpFocus)
+        obj.save()
+
+    obj = models.UserModel.objects.get(userName=userName)
+    res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
+                                     'area', 'personHomepage', 'note', 'isOnline'])
+    res['collectList'] = []
+    for url in obj.collectList:
+        res['collectList'].append(url)
+    res['focusDict'] = ast.literal_eval(obj.focusDict)
+    return HttpResponse(json.dumps({'userInfo': res}))
+
+
+# 点收藏
+def addCollect(request):
+    userName = request.POST.get('userName', '')
+    paperID = request.POST.get('paperID', 'PAPERID')
+
+    obj = models.UserModel.objects.get(userName=userName)
+    if paperID not in obj.collectList:
+        obj.collectList.append(paperID)
+        obj.save()
+
+    obj = models.UserModel.objects.get(userName=userName)
+    res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
+                                     'area', 'personHomepage', 'note', 'isOnline'])
+    res['collectList'] = []
+    for url in obj.collectList:
+        res['collectList'].append(url)
+    res['focusDict'] = ast.literal_eval(obj.focusDict)
+    return HttpResponse(json.dumps({'userInfo': res}))
+
+
+# 取消收藏
+def cancelCollect(request):
+    userName = request.POST.get('userName', '')
+    paperID = request.POST.get('paperID', 'PAPERID')
+
+    obj = models.UserModel.objects.get(userName=userName)
+    if paperID in obj.collectList:
+        obj.collectList.remove(paperID)
+        obj.save()
+
+    obj = models.UserModel.objects.get(userName=userName)
+    res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
+                                     'area', 'personHomepage', 'note', 'isOnline'])
+    res['collectList'] = []
+    for url in obj.collectList:
+        res['collectList'].append(url)
+    res['focusDict'] = ast.literal_eval(obj.focusDict)
+    return HttpResponse(json.dumps({'userInfo': res}))
+
+
+# 上传头像
+def uploadHeadImg(request):
+    # noinspection PyBroadException
+    try:
+        userName = request.POST.get('userName', '')
+        headImg = request.FILES.get('headImg')
+        print(headImg)
+
+        obj = models.UserModel.objects.get(userName=userName)
+        obj.headImg = headImg
+        obj.save()
+        return HttpResponse(json.dumps({'retCode': 1, 'message': '成功上传'}))
+    except Exception as e:
+        return HttpResponse(json.dumps({'retCode': 0, 'message':'上传失败'}))
+
+
+# 获取头像
+def getHeadImg(request):
+    userName = request.POST.get('userName', '')
+    obj = models.UserModel.objects.get(userName=userName)
+    return HttpResponse(obj.headImg, content_type='image/jpg')
