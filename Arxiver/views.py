@@ -791,6 +791,6 @@ def uploadHeadImg(request):
 
 # 获取头像
 def getHeadImg(request):
-    userName = request.POST.get('userName', '')
+    userName = request.GET.get('userName', '')
     obj = models.UserModel.objects.get(userName=userName)
     return HttpResponse(obj.headImg, content_type='image/jpg')

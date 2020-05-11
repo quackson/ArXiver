@@ -29,7 +29,8 @@
                 <p>当前第{{ currentPage }}页/共{{ pageCount }}页</p>
             </li>
             <a style = "margin-top: 15px;margin-left: 30px"  @click = "downloadPdf">download</a>
-            <el-button class="mark-btn" size="medium" type="info">收藏</el-button>
+            <el-button class="mark-btn" size="medium" type="info" @click = "addcollect">收藏</el-button>
+            <el-button class="mark-btn" size="medium" type="info" @click = "cancelcollect">取消收藏</el-button>
         </ul>
     </el-main>
   </div>
@@ -45,6 +46,8 @@ export default {
       pageCount: papers.pageCount, // 总页码
       src: 'http://arxiv.org/pdf/cond-mat/0402245v1.pdf',
       url: 'http://arxiv.org/pdf/cond-mat/0402245v1',
+      paperID:'',
+      myName: localStorage.getItem("ms_username"),
       scale: 100,
       idx: -1,
       loadedRatio: 0,
@@ -53,6 +56,7 @@ export default {
   created() {
     console.log(this.$route.params.url);
     this.url = this.$route.params.url;
+    this.paperID = this.$route.params.id;
     this.src = this.url+'.pdf';
     console.log(this.src);
     this.src = pdf.createLoadingTask(this.src) // 处理一下跨域
@@ -61,6 +65,52 @@ export default {
     pdf
   },
   methods: {
+    addcollect() {
+      var post_request = new FormData()
+      post_request.append('userName', this.myName)
+      post_request.append('paperID', this.paperID)
+      let _this = this;
+      this.$http
+        .request({
+          url: _this.$url + '/addCollect',
+          method: 'post',
+          data: post_request,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then(function(response) {
+          _this.$message({
+              message: "添加收藏成功！",
+              type: 'success',
+          });
+          console.log(response)
+        })
+        .catch(function(response) {
+          console.log(response)
+        })
+    },
+    cancelcollect() {
+      var post_request = new FormData()
+      post_request.append('userName', this.myName)
+      post_request.append('paperID', this.paperID)
+      let _this = this;
+      this.$http
+        .request({
+          url: _this.$url + '/cancelCollect',
+          method: 'post',
+          data: post_request,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then(function(response) {
+          _this.$message({
+              message: "取消收藏成功！",
+              type: 'success',
+          });
+          console.log(response)
+        })
+        .catch(function(response) {
+          console.log(response)
+        })
+    },
     
     // 改变PDF页码,val传过来区分上一页下一页的值,0上一页,1下一页
     changePdfPage(val) {

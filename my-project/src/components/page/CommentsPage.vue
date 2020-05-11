@@ -152,7 +152,7 @@ export default {
       btnShow: false,
       index: '0',
       replyComment: '',
-      myName: '攻城狮',
+      myName: localStorage.getItem("ms_username"),
       myImage: 'https://ae01.alicdn.com/kf/Hd60a3f7c06fd47ae85624badd32ce54dv.jpg',
       myID: 19870621,
       to: '',
@@ -181,6 +181,18 @@ export default {
       })
       .then(function(response) {
         _this.comments = response.data.comments
+        console.log(response)
+      })
+      .catch(function(response) {
+        console.log(response)
+      })
+      this.$http
+      .request({
+        url: _this.$url + '/getHeadImg?userName=' + this.myName,
+        method: 'get',
+      })
+      .then(function(response) {
+        _this.myImage = response.data
         console.log(response)
       })
       .catch(function(response) {

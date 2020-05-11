@@ -4,14 +4,14 @@
             <div class="ms-title">arXiver</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
-                    <el-input v-model="param.username" placeholder="username">
+                    <el-input v-model="param.username" placeholder="请输入用户名">
                         <el-button slot="prepend" icon="el-icon-user-solid"></el-button>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
                     <el-input
                         type="password"
-                        placeholder="password"
+                        placeholder="请输入密码"
                         v-model="param.password"
                         @keyup.enter.native="submitForm()"
                     >
@@ -19,9 +19,11 @@
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
+                    <el-button type="primary" @click="registerForm()">注册</el-button>
+                </div>
+                <div class="login-btn">
                     <el-button type="primary" @click="submitForm()">登录</el-button>
                 </div>
-                <p class="login-tips">Tips : 用户名和密码随便填。</p>
             </el-form>
         </div>
     </div>
@@ -32,8 +34,8 @@ export default {
     data: function() {
         return {
             param: {
-                username: 'admin',
-                password: '123123',
+                username: '',
+                password: '',
             },
             rules: {
                 username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -42,17 +44,77 @@ export default {
         };
     },
     methods: {
+        registerForm() {
+            var post_request = new FormData()
+            post_request.append('userName', this.param.username)
+            post_request.append('password', this.param.password)
+            let _this = this;
+            this.$http
+            .request({
+              url: this.$url + '/register',
+              method: 'post',
+              data: post_request,
+              headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            .then(function(response) {
+              console.log(response)
+              if(response.data.register.retCode == 1){
+                _this.$message({
+                    message: response.data.register.message + "！请登录",
+                    type: 'success',
+                });
+              }
+              else {
+                _this.$message({
+                    message: response.data.register.message,
+                    type: 'error',
+                });
+              }
+              
+            })
+            .catch(function(response) {
+              console.log(response)
+            });
+        },
         submitForm() {
-            this.$refs.login.validate(valid => {
-                if (valid) {
-                    this.$message.success('登录成功');
-                    localStorage.setItem('ms_username', this.param.username);
-                    this.$router.push('/');
-                } else {
-                    this.$message.error('请输入账号和密码');
-                    console.log('error submit!!');
-                    return false;
-                }
+            var post_request = new FormData()
+            post_request.append('userName', this.param.username)
+            post_request.append('password', this.param.password)
+            let _this = this;
+            this.$http
+            .request({
+              url: this.$url + '/login',
+              method: 'post',
+              data: post_request,
+              headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            .then(function(response) {
+              console.log(response)
+              if(response.data.login.retCode == 1){
+                _this.$message({
+                    message: response.data.login.message,
+                    type: 'success',
+                });
+
+                localStorage.setItem('ms_username', _this.param.username);
+                _this.$router.push('/');
+              }
+              else if(response.data.login.retCode == 2) {
+                _this.$message({
+                    message: response.data.login.message,
+                    type: 'error',
+                });
+              }
+              else {
+                _this.$message({
+                    message: response.data.login.message + "！请先注册",
+                    type: 'warning',
+                });
+              }
+              
+            })
+            .catch(function(response) {
+              console.log(response)
             });
         },
     },
