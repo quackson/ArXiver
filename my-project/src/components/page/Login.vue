@@ -97,7 +97,7 @@ export default {
                 });
 
                 localStorage.setItem('ms_username', _this.param.username);
-                _this.$router.push('/');
+                _this.$router.push('/dashboard');
               }
               else if(response.data.login.retCode == 2) {
                 _this.$message({
