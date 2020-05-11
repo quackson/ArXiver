@@ -1,15 +1,15 @@
 <template>
   <div class="homepage">
     <div class="full-content">
-      <el-tabs v-model="onRoutes" tab-position="left" style="height: 100%;">
+      <el-tabs v-model="onRoutes" tab-position="left" style="height: 100%;" @tab-click="handleTabClick">
         <el-tab-pane label="关注列表" name="follow" :key="'follow'">
-            <follow-content></follow-content>
+          <follow-content v-if="tabRefresh.follow"></follow-content>
         </el-tab-pane>
         <el-tab-pane label="个人信息" name="info" :key="'info'">
-          <info-content></info-content>
+          <info-content v-if="tabRefresh.info"></info-content>
         </el-tab-pane>
         <el-tab-pane label="收藏夹" name="collection" :key="'collection'">
-          <collection></collection>
+          <collection v-if="tabRefresh.collection"></collection>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -17,33 +17,67 @@
 </template>
 
 <script>
-import followList from "./FollowListPage.vue";
-import infoPage from "./InfoPage.vue";
-import collection from "./CollectionPage.vue";
+import followList from './FollowListPage.vue'
+import infoPage from './InfoPage.vue'
+import collection from './CollectionPage.vue'
 export default {
   data() {
     return {
-    };
+      tabRefresh: {
+        follow: true,
+        info: true,
+        collection: true,
+      },
+    }
   },
   components: {
     followContent: followList,
     collection: collection,
-    infoContent: infoPage
+    infoContent: infoPage,
   },
-  computed:{
-    onRoutes:{
-      get(){
-        return this.$route.params.activeName;
+  computed: {
+    onRoutes: {
+      get() {
+        return this.$route.params.activeName
       },
-      set(v){
+      set(v) {},
+    },
+  },
+  methods: {
+    handleTabClick: function(tab, event) {
+      this.$router.push({ path: '/account/' + tab.name })
+      switch (tab.name) {
+        case 'follow':
+          this.switchTab('follow')
+          console.log(tab.name)
+          break
+        case 'info':
+          this.switchTab('info')
+          console.log(tab.name)
+          break
+        case 'collection':
+          this.switchTab('collection')
+          console.log(tab.name)
+          break
+        default:
+          console.log('wrong choice')
       }
     },
-  }
-};
+    switchTab: function(tab) {
+      for (let [key, value] of Object.entries(this.tabRefresh)) {
+        if (key == tab) {
+          this.tabRefresh[key] = true
+        } else {
+          this.tabRefresh[key] = false
+        }
+      }
+    },
+  },
+}
 </script>
 
 <style>
-.homepage{
+.homepage {
   height: 100%;
 }
 .full-content {

@@ -20,21 +20,27 @@
       <!-- 基本账户信息 -->
       <el-col :span="12">
         <el-form class="main-info" :model="info" label-position="left" width="80%" label-width="100px">
-          <el-form-item label="用户名：">{{ info.name }}</el-form-item>
-          <el-form-item label="电子邮件：" class="form-row">
+          <el-form-item label="用户名：">{{ info.userName }}</el-form-item>
+          <el-form-item label="电子邮件：" placeholder="请输入您的电子邮箱" class="form-row">
             <el-input v-model="info.email"></el-input>
           </el-form-item>
-          <el-form-item label="专业：" class="form-row">
+          <el-form-item label="专业：" placeholder="请输入您的专业" class="form-row">
             <el-input v-model="info.profession" maxlength="15" show-word-limit></el-input>
           </el-form-item>
-          <el-form-item label="电话号码：" class="form-row">
+          <el-form-item label="电话号码：" placeholder="请输入您的电话号码" class="form-row">
             <el-input v-model="info.phoneNumber" maxlength="11"></el-input>
           </el-form-item>
           <el-form-item label="个人主页：" class="form-row">
-            <el-input v-model="info.personHomepage" maxlength="30"></el-input>
+            <el-input v-model="info.personHomepage" placeholder="请输入您的个人主页" maxlength="30"></el-input>
           </el-form-item>
           <el-form-item label="备注：" show-word-limit class="form-row">
-            <el-input type="textarea" v-model="info.note" maxlength="80" show-word-limit></el-input>
+            <el-input
+              type="textarea"
+              v-model="info.note"
+              placeholder="请输入您的个人备注"
+              maxlength="80"
+              show-word-limit
+            ></el-input>
           </el-form-item>
         </el-form>
         <el-row :gutter="20" style="margin-top:5%;">
@@ -50,22 +56,25 @@ export default {
   data() {
     return {
       avatarImg: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
-    }
-  },
-  computed: {
-    info() {
-      let info = {
-        name: 'admin',
+      info: {
+        userName: 'admin',
         email: 'admin@admin.com',
         profession: 'xxx',
         phoneNumber: '135',
         personHomepage: 'www.linxin.com',
         note: 'hi!我是linxin',
-      };
-      return info;
-      console.log(name)
+      },
+    }
+  },
+  created() {
+    this.load_data()
+  },
+  methods: {
+    load_data: function() {
+      this.info.userName = localStorage.getItem('ms_username')
       var post_request = new FormData()
-      post_request.append('userName', name)
+      post_request.append('userName', this.info.userName)
+      console.log(this.info.userName)
       this.$http
         .request({
           url: this.$url + '/getUserInformation',
@@ -73,21 +82,18 @@ export default {
           data: post_request,
           headers: { 'Content-Type': 'multipart/form-data' },
         })
-        .then(function(response) {
+        .then((response) => {
           console.log(response)
-          info.email = response.data.email
-          info.profession = response.data.profession
-          info.phoneNumber = response.data.phoneNumber
-          info.area = response.data.area
-          info.personHomepage = response.data.personHomepage
-          info.note = response.data.note
+          this.info.email = response.data.userInfo.email!=="undefined"?response.data.userInfo.email:""
+          this.info.profession = response.data.userInfo.profession!=="undefined"?response.data.userInfo.profession:""
+          this.info.phoneNumber = response.data.userInfo.phoneNumber!=="undefined"?response.data.userInfo.phoneNumber:""
+          this.info.personHomepage = response.data.userInfo.personHomepage!=="undefined"?response.data.userInfo.personHomepage:""
+          this.info.note = response.data.userInfo.note!=="undefined"?response.data.userInfo.note:""
         })
         .catch(function(response) {
           console.log(response)
         })
     },
-  },
-  methods: {
     // 打开图片上传
     uploadAvatar: function() {
       this.$el.querySelector('.hiddenInput').click()
