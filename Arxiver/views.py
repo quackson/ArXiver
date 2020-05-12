@@ -675,39 +675,14 @@ def modifyUserInformation(request):
 # 点关注
 def addFocus(request):
     userName = request.POST.get('userName', '')
-    focusList = request.POST.getlist('focusList', '')
+    focusList = request.POST.get('focusList', '')
+    focusList = focusList.split(',')
     obj = models.UserModel.objects.get(userName=userName)
 
+    obj.focusList = []
     for subject in focusList:
-        if str(subject) not in obj.focusList:
-            obj.focusList.append(str(subject))
-            obj.save()
-
-    obj = models.UserModel.objects.get(userName=userName)
-    res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
-                                     'area', 'personHomepage', 'note', 'isOnline'])
-    res['collectList'] = []
-    for url in obj.collectList:
-        if url != '-1':
-            res['collectList'].append(url)
-    res['focusList'] = []
-    for subject in obj.focusList:
-        if subject != '-1':
-            res['focusList'].append(subject)
-
-    return HttpResponse(json.dumps({'userInfo': res}))
-
-
-# 取消关注
-def cancelFocus(request):
-    userName = request.POST.get('userName', '')
-    focusList = request.POST.getlist('focusList', '')
-    obj = models.UserModel.objects.get(userName=userName)
-
-    for subject in focusList:
-        if str(subject) in obj.focusList:
-            obj.focusList.remove(str(subject))
-            obj.save()
+        obj.focusList.append(subject)
+    obj.save()
 
     obj = models.UserModel.objects.get(userName=userName)
     res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',

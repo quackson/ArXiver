@@ -24,7 +24,6 @@ urlpatterns = [
     path('getUserInformation', views.getUserInformation),
     path('modifyUserInformation', views.modifyUserInformation),
     path('addFocus', views.addFocus),
-    path('cancelFocus', views.cancelFocus),
     path('addCollect', views.addCollect),
     path('cancelCollect', views.cancelCollect),
     path('uploadHeadImg', views.uploadHeadImg),
