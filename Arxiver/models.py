@@ -2,6 +2,7 @@ from django.db import models
 from typing import Iterable
 import django.utils.timezone as timezone
 
+
 # Create your models here.
 
 
@@ -41,13 +42,12 @@ class ListField(models.TextField):
     def get_prep_value(self, value):
         if not value:
             return
-        assert(isinstance(value, Iterable))
+        assert (isinstance(value, Iterable))
         return self.token.join(value)
 
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
-
 
 
 class CommentModel(models.Model):
@@ -113,7 +113,7 @@ class UserModel(models.Model):
     isOnline = models.IntegerField(default=0)
 
     collectList = ListField()  # 收藏夹，存储paper的url
-    focusDict = models.TextField()  # 关注领域，存储str格式的字典
+    focusList = ListField()  # 关注领域，存储二级学科的list
 
     def __str__(self):
         return self.userName
