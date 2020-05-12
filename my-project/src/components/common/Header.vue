@@ -34,9 +34,7 @@
         </div>
         <!-- 用户头像 -->
         <div class="user-avator">
-          <img
-            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-          />
+          <el-avatar class="header-img" :size="35" :src="userImage"></el-avatar>
         </div>
         <!-- 用户名下拉菜单 -->
         <el-dropdown class="user-name" trigger="click" @command="handleCommand">
@@ -73,7 +71,8 @@ export default {
       name: "linxin",
       message: 2,
       search: "",
-      select: ""
+      select: "",
+      userImage: "",
     };
   },
   computed: {
@@ -81,6 +80,21 @@ export default {
       let username = localStorage.getItem("ms_username");
       return username ? username : this.name;
     }
+  },
+  created() {
+    let _this = this;
+    this.$http
+      .request({
+        url: _this.$url + '/getHeadImg?userName=' + localStorage.getItem("ms_username"),
+        method: 'get',
+      })
+      .then(function(response) {
+        _this.userImage = response.data.avatar_url;
+        console.log(response)
+      })
+      .catch(function(response) {
+        console.log(response)
+      })
   },
   methods: {
     // 用户名下拉菜单选择事件

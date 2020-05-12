@@ -192,7 +192,7 @@ export default {
         method: 'get',
       })
       .then(function(response) {
-        _this.myImage = response.data
+        _this.myImage = response.data.avatar_url;
         console.log(response)
       })
       .catch(function(response) {
