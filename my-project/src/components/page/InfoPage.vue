@@ -1,7 +1,7 @@
 <template>
   <div class="full-content">
     <!-- 头像 -->
-    <el-row :gutter="20" style="margin-top:5%;">
+    <el-row :gutter="20" style="margin-top:5%;" v-if="info.userName&&avatarImg">
       <el-col :span="10"
         ><div class="icon">
           <div class="center">
@@ -56,14 +56,8 @@ export default {
   inject:['reload'],
   data() {
     return {
-      avatarImg: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
+      avatarImg: undefined,
       info: {
-        userName: 'admin',
-        email: 'admin@admin.com',
-        profession: 'xxx',
-        phoneNumber: '135',
-        personHomepage: 'www.linxin.com',
-        note: 'hi!我是linxin',
       },
     }
   },
