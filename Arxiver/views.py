@@ -622,14 +622,14 @@ def getUserInformation(request):
 # 修改个人信息prin
 def modifyUserInformation(request):
     print("here")
-    userName = request.POST.get('userName', '')
-    password = request.POST.get('password', '')
-    profession = request.POST.get('profession', '')
-    email = request.POST.get('email', '')
-    phoneNumber = request.POST.get('phoneNumber', '')
-    area = request.POST.get('area', '')
-    personHomepage = request.POST.get('personHomepage', '')
-    note = request.POST.get('note', '')
+    userName = request.POST.get('userName', "undefined")
+    password = request.POST.get('password', "undefined")
+    profession = request.POST.get('profession', "undefined")
+    email = request.POST.get('email', "undefined")
+    phoneNumber = request.POST.get('phoneNumber', "undefined")
+    area = request.POST.get('area', "undefined")
+    personHomepage = request.POST.get('personHomepage', "undefined")
+    note = request.POST.get('note', "undefined")
 
     obj = models.UserModel.objects.get(userName=userName)
     if password != "undefined":
