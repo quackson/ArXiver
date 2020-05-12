@@ -24,9 +24,9 @@ export default {
   data() {
     return {
       tabRefresh: {
-        follow: true,
-        info: true,
-        collection: true,
+        follow: false,
+        info: false,
+        collection: false,
       },
     }
   },
@@ -38,6 +38,7 @@ export default {
   computed: {
     onRoutes: {
       get() {
+        this.switchTab(this.$route.params.activeName)
         return this.$route.params.activeName
       },
       set(v) {},
@@ -49,15 +50,12 @@ export default {
       switch (tab.name) {
         case 'follow':
           this.switchTab('follow')
-          console.log(tab.name)
           break
         case 'info':
           this.switchTab('info')
-          console.log(tab.name)
           break
         case 'collection':
           this.switchTab('collection')
-          console.log(tab.name)
           break
         default:
           console.log('wrong choice')

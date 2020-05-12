@@ -15,7 +15,7 @@
           <div class="center">
             <el-button @click.stop="uploadAvatar">更改头像</el-button>
           </div>
-          <input type="file" accept="image/*" @change="handleFile" class="hiddenInput" /></div
+          <input type="file" accept="image/jpeg" @change="handleFile" class="hiddenInput" /></div
       ></el-col>
       <!-- 基本账户信息 -->
       <el-col :span="12">
@@ -53,6 +53,7 @@
 
 <script>
 export default {
+  inject:['reload'],
   data() {
     return {
       avatarImg: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
@@ -67,15 +68,14 @@ export default {
     }
   },
   created() {
-    this.load_data();
-    this.loadAvatar();
+    this.load_data()
+    this.loadAvatar()
   },
   methods: {
     load_data: function() {
       this.info.userName = localStorage.getItem('ms_username')
       var post_request = new FormData()
       post_request.append('userName', this.info.userName)
-      console.log(this.info.userName)
       this.$http
         .request({
           url: this.$url + '/getUserInformation',
@@ -137,7 +137,7 @@ export default {
         })
         .then((response) => {
           console.log(response)
-          this.avatarImg = response.data.avatar_url;
+          this.avatarImg = response.data.avatar_url
         })
         .catch(function(response) {
           console.log(response)
@@ -147,16 +147,64 @@ export default {
     uploadAvatar: function() {
       this.$el.querySelector('.hiddenInput').click()
     },
-    // 将头像显示
+    // 将头像显示、上传至后端
     handleFile: function(e) {
       let $target = e.target || e.srcElement
       let file = $target.files[0]
-      var reader = new FileReader()
-      reader.onload = (data) => {
-        let res = data.target || data.srcElement
-        this.avatarImg = res.result
+      if (file.type != 'image/jpeg') {
+        this.$notify.error({
+          title: '文件类型无效',
+          message: '只能上传jpg文件作为头像',
+        })
+        return
       }
-      reader.readAsDataURL(file)
+      if (file.size / 1024 / 1024 > 4) {
+        this.$notify.error({
+          title: '图片体积过大',
+          message: '只能上传不超过4M的图片作为头像',
+        })
+        return
+      }
+
+      var post_request = new FormData()
+      post_request.append('userName', this.info.userName)
+      post_request.append('headImg', file)
+      this.$http
+        .request({
+          url: this.$url + '/uploadHeadImg',
+          method: 'post',
+          data: post_request,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then((response) => {
+          console.log(response)
+          var reader = new FileReader()
+          reader.onload = (data) => {
+            let res = data.target || data.srcElement
+            this.avatarImg = res.result
+          }
+          reader.readAsDataURL(file)
+          this.reload()
+          this.$notify({
+            title: '成功',
+            message: '头像修改成功',
+            type: 'success',
+          })
+        })
+        .catch((response) => {
+          console.log(response)
+          this.$notify.error({
+            title: '错误',
+            message: '头像修改失败',
+          })
+        })
+
+      // var reader = new FileReader()
+      // reader.onload = (data) => {
+      //   let res = data.target || data.srcElement
+      //   this.avatarImg = res.result
+      // }
+      // reader.readAsDataURL(file)
     },
   },
 }
