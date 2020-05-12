@@ -68,8 +68,8 @@ export default {
 				  method:'get',
 				}).then(function(response) {
 				  _this.tableData = response.data.papers,
-				  console.log(begin),
-				   console.log(response.data.papers),
+				  //console.log(begin),
+				  //console.log(response.data.papers),
 				  console.log(_this.tableData)
 				}).catch(function(error) {
 				  console.log(error)
