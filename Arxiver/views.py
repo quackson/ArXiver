@@ -619,8 +619,9 @@ def getUserInformation(request):
     return HttpResponse(json.dumps({'userInfo': res}))
 
 
-# 修改个人信息
+# 修改个人信息prin
 def modifyUserInformation(request):
+    print("here")
     userName = request.POST.get('userName', '')
     password = request.POST.get('password', '')
     profession = request.POST.get('profession', '')
@@ -631,25 +632,25 @@ def modifyUserInformation(request):
     note = request.POST.get('note', '')
 
     obj = models.UserModel.objects.get(userName=userName)
-    if password != '':
+    if password != "undefined":
         obj.password = password
         obj.save()
-    if profession != '':
+    if profession != "undefined":
         obj.profession = profession
         obj.save()
-    if email != '':
+    if email != "undefined":
         obj.email = email
         obj.save()
-    if phoneNumber != '':
+    if phoneNumber != "undefined":
         obj.phoneNumber = phoneNumber
         obj.save()
-    if area != '':
+    if area != "undefined":
         obj.area = area
         obj.save()
-    if personHomepage != '':
+    if personHomepage != "undefined":
         obj.personHomepage = personHomepage
         obj.save()
-    if note != '':
+    if note != "undefined":
         obj.note = note
         obj.save()
 
@@ -793,4 +794,4 @@ def uploadHeadImg(request):
 def getHeadImg(request):
     userName = request.GET.get('userName', '')
     obj = models.UserModel.objects.get(userName=userName)
-    return HttpResponse(obj.headImg, content_type='image/jpg')
+    return HttpResponse(json.dumps({'avatar_url': obj.headImg.url}))

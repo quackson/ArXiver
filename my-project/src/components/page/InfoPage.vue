@@ -44,7 +44,7 @@
           </el-form-item>
         </el-form>
         <el-row :gutter="20" style="margin-top:5%;">
-          <el-button type="primary" class="center" style="margin-top:50px">保存信息</el-button>
+          <el-button type="primary" class="center" @click="saveInfo()" style="margin-top:50px">保存信息</el-button>
         </el-row>
       </el-col>
     </el-row>
@@ -67,7 +67,8 @@ export default {
     }
   },
   created() {
-    this.load_data()
+    this.load_data();
+    this.loadAvatar();
   },
   methods: {
     load_data: function() {
@@ -84,11 +85,59 @@ export default {
         })
         .then((response) => {
           console.log(response)
-          this.info.email = response.data.userInfo.email!=="undefined"?response.data.userInfo.email:""
-          this.info.profession = response.data.userInfo.profession!=="undefined"?response.data.userInfo.profession:""
-          this.info.phoneNumber = response.data.userInfo.phoneNumber!=="undefined"?response.data.userInfo.phoneNumber:""
-          this.info.personHomepage = response.data.userInfo.personHomepage!=="undefined"?response.data.userInfo.personHomepage:""
-          this.info.note = response.data.userInfo.note!=="undefined"?response.data.userInfo.note:""
+          this.info.email = response.data.userInfo.email !== 'undefined' ? response.data.userInfo.email : ''
+          this.info.profession =
+            response.data.userInfo.profession !== 'undefined' ? response.data.userInfo.profession : ''
+          this.info.phoneNumber =
+            response.data.userInfo.phoneNumber !== 'undefined' ? response.data.userInfo.phoneNumber : ''
+          this.info.personHomepage =
+            response.data.userInfo.personHomepage !== 'undefined' ? response.data.userInfo.personHomepage : ''
+          this.info.note = response.data.userInfo.note !== 'undefined' ? response.data.userInfo.note : ''
+        })
+        .catch(function(response) {
+          console.log(response)
+        })
+    },
+    saveInfo: function() {
+      var post_request = new FormData()
+      post_request.append('userName', this.info.userName)
+      post_request.append('email', this.info.email)
+      post_request.append('profession', this.info.profession)
+      post_request.append('phoneNumber', this.info.phoneNumber)
+      post_request.append('personHomepage', this.info.personHomepage)
+      post_request.append('note', this.info.note)
+      this.$http
+        .request({
+          url: this.$url + '/modifyUserInformation',
+          method: 'post',
+          data: post_request,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then((response) => {
+          console.log(response)
+          this.$notify({
+            title: '成功',
+            message: '信息修改成功',
+            type: 'success',
+          })
+        })
+        .catch(function(response) {
+          console.log(response)
+          this.$notify.error({
+            title: '错误',
+            message: '信息修改失败',
+          })
+        })
+    },
+    loadAvatar: function() {
+      this.$http
+        .request({
+          url: this.$url + '/getHeadImg?userName=' + this.info.userName,
+          method: 'get',
+        })
+        .then((response) => {
+          console.log(response)
+          this.avatarImg = response.data.avatar_url;
         })
         .catch(function(response) {
           console.log(response)
