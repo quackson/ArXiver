@@ -55,6 +55,11 @@ export default new Router({
             meta: { title: '登录' }
         },
         {
+            path: '/signup',
+            component: () => import(/* webpackChunkName: "login" */ '../components/page/Signup.vue'),
+            meta: { title: '注册' }
+        },
+        {
             path: '/hello',
             component: () => import(/* webpackChunkName: "login" */ '../components/HelloWorld.vue'),
             meta: { title: '测试' }

@@ -12,18 +12,23 @@
                         <el-button slot="prepend" icon="el-icon-user-solid"></el-button>
                     </el-input>
                 </el-form-item>
+                <el-form-item prop="username">
+                    <el-input v-model="param.email" placeholder="请输入邮箱">
+                        <el-button slot="prepend" icon="el-icon-user-solid"></el-button>
+                    </el-input>
+                </el-form-item>
                 <el-form-item prop="password">
                     <el-input
                         type="password"
                         placeholder="请输入密码"
                         v-model="param.password"
-                        @keyup.enter.native="submitForm()"
+                        @keyup.enter.native="registerForm()"
                     >
                         <el-button slot="prepend" icon="el-icon-lock"></el-button>
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
-                    <el-button type="info" @click="submitForm()">登录</el-button>
+                    <el-button type="info" @click="registerForm()">注册</el-button>
                 </div>
             </el-form>
         </div>
@@ -37,9 +42,11 @@ export default {
             param: {
                 username: '',
                 password: '',
+                email: '',
             },
             rules: {
                 username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+                email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
                 password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
             },
         };
@@ -51,39 +58,31 @@ export default {
         signup() {
             this.$router.push('/signup');
         },
-        submitForm() {
+        registerForm() {
             var post_request = new FormData()
             post_request.append('userName', this.param.username)
             post_request.append('password', this.param.password)
+            post_request.append('email', this.param.email)
             let _this = this;
             this.$http
             .request({
-              url: this.$url + '/login',
+              url: this.$url + '/register',
               method: 'post',
               data: post_request,
               headers: { 'Content-Type': 'multipart/form-data' },
             })
             .then(function(response) {
               console.log(response)
-              if(response.data.login.retCode == 1){
+              if(response.data.register.retCode == 1){
                 _this.$message({
-                    message: response.data.login.message,
+                    message: response.data.register.message + "！请登录",
                     type: 'success',
-                });
-
-                localStorage.setItem('ms_username', _this.param.username);
-                _this.$router.push('/dashboard');
-              }
-              else if(response.data.login.retCode == 2) {
-                _this.$message({
-                    message: response.data.login.message,
-                    type: 'error',
                 });
               }
               else {
                 _this.$message({
-                    message: response.data.login.message + "！请先注册",
-                    type: 'warning',
+                    message: response.data.register.message,
+                    type: 'error',
                 });
               }
               
