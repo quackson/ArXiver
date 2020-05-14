@@ -136,3 +136,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'rg_firstgroup@163.com'
+EMAIL_HOST_PASSWORD = 'GODKZOYOMBSPQJYI'
+EMAIL_USER_TLS = True
+DEFAULT_FROM_EMAIL = 'Arxiver管理员<rg_firstgroup@163.com>'
+
