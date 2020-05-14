@@ -8,9 +8,8 @@ import urllib
 import os
 from . import models
 import hashlib
-import smtplib
-from email.mime.text import MIMEText
-from email.utils import formataddr
+from django.core.mail import send_mail
+from django.conf import settings
 from django.forms.models import model_to_dict
 '''import jaro'''
 import ast
@@ -562,24 +561,20 @@ def login(request):
 '''
 
 
-# 注册（使用了Python下的SMTP功能，如出现问题可改动）
+# 注册（使用了Django内助的邮箱验证功能）
 def register(request):
     userName = request.POST.get('userName', 'username')
     password = request.POST.get('password', 'xxx')
     email = request.POST.get('email', 'undefined')
-
-    my_sender = 'rg_firstgroup@163.com'  # 管理员邮箱账号
-    my_pass = 'GODKZOYOMBSPQJYI'  # 管理员邮箱授权码
-
-
     res = {'retCode': 0, 'message': ''}
 
     obj = models.UserModel.objects.filter(userName=userName)
     objmail = models.UserModel.objects.filter(email=email)
 
     if obj.count() == 0 and objmail.count() == 0:
-        mailret = True
+        '''
         try:
+
             msg = MIMEText('您正在进行ArXiver注册，如果不是您亲自操作，请及时联系管理员邮箱', 'plain', 'utf-8')
             msg['From'] = formataddr(["ArXiver管理员", my_sender])  # 发件人邮件昵称和账号
             msg['To'] = formataddr(["注册用户", email])  # 收件人邮箱昵称和账号
@@ -590,12 +585,15 @@ def register(request):
             server.quit()  # 关闭连接
         except:
             mailret = False
+        '''
+        mailret = send_mail('ArXiver注册', '您正在进行ArXiver注册，如果不是您亲自操作，请及时联系本邮箱', 
+            'rg_firstgroup@163.com',[email], fail_silently=False)
 
-        if mailret:
+        if mailret == 1:
             models.UserModel.objects.create(userName=userName, password=password,email=email,
                                             collectList=['-1'], focusList=['-1'])
 
-            obj = models.UserModel.objects.get(userName=userName,email=email)
+            obj = models.UserModel.objects.get(userName=userName)
             #obj.collectList.remove('-1')
             obj.save()
             res['retCode'] = 1
