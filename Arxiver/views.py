@@ -562,7 +562,7 @@ def login(request):
 '''
 
 
-# 注册
+# 注册（使用了Python下的SMTP功能，如出现问题可改动）
 def register(request):
     userName = request.POST.get('userName', 'username')
     password = request.POST.get('password', 'xxx')
