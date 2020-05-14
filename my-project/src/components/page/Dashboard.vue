@@ -4,10 +4,10 @@
 <el-row :gutter="20">
 <el-col :span="24">
 	<el-table :data="tableData.slice(0,pageSize)"	
-					height="auto"
+					height="tableHeight"
                     style="width: 100%"
 					>
-        <el-table-column prop="title" label="推荐论文" width="400" :show-overflow-tooltip="true">
+        <el-table-column prop="title" label="推荐论文" width="400":show-overflow-tooltip="true">
 			<template slot-scope="scope">
             <el-button type="text" 
 			@click="openDialog(scope.row)"
@@ -44,9 +44,9 @@ export default {
  data() {		
 	    return {
         tableData:null,
-		//jsondata:test,
+		tableHeight: window.innerHeight  - 100,
         currentPage:1,
-        pageSize:8,
+        pageSize:10,
 		totalNum:100, 
 		 k:'0',
 		 m:'0',
@@ -60,11 +60,11 @@ export default {
                    this.pageSize = val;    //动态改变
 	},
 	changetable(page){
-		var begin=(page-1)*8;
+		var begin=(page-1)*this.pageSize;
 				  //加载val页信息
 		let _this=this
 		this.$http.request({
-				  url:_this.$url + '/searchPaper?method='+_this.way+'&query='+_this.k +'&maxNum=8&start='+begin,
+				  url:_this.$url + '/searchPaper?method='+_this.way+'&query='+_this.k +'&maxNum='+_this.pageSize+'&start='+begin,
 				  method:'get',
 				}).then(function(response) {
 				  _this.tableData = response.data.papers,
@@ -118,7 +118,7 @@ export default {
 		
 	},
 	created(){
-		this.tabelData=new Array(8);
+		this.tabelData=new Array(this.pageSize);
 		this.getData(this.$route.query);
     },   
 }
@@ -128,16 +128,37 @@ export default {
 </style>
 <style scoped>
 .el-row {
+	/*
   top:30px;
   bottom: 70px;
   right:0px;
   width:100%;
   position: absolute;
   z-index:1;
+  */
+  top:4%;
+  bottom: 4%;
+  right:0px;
+  width:100%;
+  position: absolute;  
+  overflow-y: scroll;
+  z-index:1;
+}
+.el-row ::-webkit-scrollbar {
+    width: 0;
+}
+.el-row  > ul {
+    height: 100%;
 }
 .block{
+	/*
   bottom:0px;
   left: 800px;
+  position:fixed;
+  z-index:1;
+  */
+  bottom:0px;
+  left: 50%;
   position:fixed;
   z-index:1;
 }
