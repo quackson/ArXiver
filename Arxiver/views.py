@@ -12,6 +12,10 @@ from django.forms.models import model_to_dict
 import jaro
 import ast
 from operator import attrgetter
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
 class Paper:
     def __init__(self):
@@ -146,7 +150,10 @@ def showPaper(request):
 
 
 def recommendPaper(request):
+<<<<<<< Updated upstream
     
+=======
+>>>>>>> Stashed changes
     user = request.GET.get('user')
     obj = models.UserModel.objects.get(userName=user)
     
@@ -156,6 +163,11 @@ def recommendPaper(request):
     '''
     sums = []
     for url in urls:
+<<<<<<< Updated upstream
+=======
+        if url =='-1':
+            continue
+>>>>>>> Stashed changes
         res = requests.get(url)
         text = res.text
         soup = bs(text,'lxml')
@@ -223,7 +235,10 @@ def recommendPaper(request):
         res['papers'].append(p)
     res = json.dumps(res)
     return HttpResponse(res)
+<<<<<<< Updated upstream
     
+=======
+>>>>>>> Stashed changes
     
     
 
