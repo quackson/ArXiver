@@ -14,6 +14,7 @@ from django.forms.models import model_to_dict
 import jaro
 import ast
 from operator import attrgetter
+import re
 
 class Paper:
     def __init__(self):
@@ -145,7 +146,52 @@ def showPaper(request):
     rp['url'] = fileurl
     return HttpResponse(json.dumps(rp))
     '''
-
+def getPaperInfo(url):
+    res = requests.get(url)
+    text = res.text
+    soup = bs(text,'lxml')
+    s = soup.findAll("blockquote")
+    summary = s[0].text[10:].strip()
+    author = ''
+    div = soup.findAll("div", {"class": "authors"})[0]
+    aus = div.findAll('a')
+    for au in aus:
+        author+=(au.text+'/')
+    paper_id = url
+    updatedTime = None
+    publishedTime = None
+    times = soup.findAll('div',{'class':'submission-history'})[0].text
+    times = re.split('\[|\]',times)
+    for i,t in enumerate(times):
+        if i<4 or i%2==1:
+            continue
+        if i==4:
+            publishedTime = t.split('(')[0].split('\n')[1].strip()
+        updatedTime = t.split('(')[0].split('\n')[1].strip()
+    title = soup.findAll('h1',{'class':'title mathjax'})[0].text.split('Title:')[1]
+    category = ''
+    cats = soup.findAll('td',{'class':'tablecell subjects'})[0].text.split(')')
+    for cat in cats:
+        if len(cat)>1:
+            category+=(cat.split('(')[1]+'/')
+    doiLink = 'http://dx.doi.org/'+soup.findAll('a',{'class':'link-https link-external'})[0]['data-doi']
+    paperLink = url
+    pdf = soup.findAll("a",{"class":"mobile-submission-download"})[0]
+    pdfLink = 'https://arXiv.org'+pdf['href']
+    res = {
+        'author':author,
+        'id':paper_id,
+        'updatedTime':updatedTime,
+        'publishedTime':publishedTime,
+        'title':title,
+        'summary':summary,
+        'category':category,
+        'doiLink':doiLink,
+        'paperLink':paperLink,
+        'pdfLink':pdfLink
+    }
+    return res
+    
 
 def recommendPaper(request):
     user = request.GET.get('user')
@@ -157,21 +203,25 @@ def recommendPaper(request):
     '''
     sums = []
     for url in urls:
-        if url =='-1':
-            continue
-        res = requests.get(url)
-        text = res.text
-        soup = bs(text,'lxml')
-        s = soup.findAll("blockquote")
-        sums.append(s[0].text)
+        try:
+            res = requests.get(url)
+            text = res.text
+            soup = bs(text,'lxml')
+            s = soup.findAll("blockquote")
+            sums.append(s[0].text)
+        except:
+            pass
     fields = []
-    focusDict = ast.literal_eval(obj.focusDict)
-    for (k,v) in focusDict.items():
-        fields+=v
+    '''
+    for f in obj.focusList:
+        fields.append(num2cat(f))
+        
+    num2cat: a mapping function from number to category
+    '''
     
     papers = []
     for cat in fields:
-        url = "http://export.arxiv.org/api/query?search_query=cat:" + cat+ "&sortBy=submittedDate&sortOrder=ascending&max_results=10"
+        url = "http://export.arxiv.org/api/query?search_query=cat:" + cat+ "&sortBy=submittedDate&sortOrder=desscending&max_results=10"
         res = requests.get(url)
         data = res.text
         soup = bs(data,'lxml')
