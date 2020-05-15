@@ -11,21 +11,24 @@ import hashlib
 from django.core.mail import send_mail
 from django.conf import settings
 from django.forms.models import model_to_dict
-'''import jaro'''
+import jaro
 import ast
+from operator import attrgetter
 
 class Paper:
-        def __init__(self):
-                self.author = []
-                self.id = None
-                self.updatedTime = None
-                self.publishedTime = None
-                self.title = None
-                self.summary = None
-                self.category = []
-                self.doiLink = None
-                self.paperLink = None
-                self.pdfLink = None
+    def __init__(self):
+        self.author = []
+        self.id = None
+        self.updatedTime = None
+        self.publishedTime = None
+        self.title = None
+        self.summary = None
+        self.category = []
+        self.doiLink = None
+        self.paperLink = None
+        self.pdfLink = None
+        self.score = 0
+
 
 def index(request):
     return HttpResponse(json.dumps('Hello World'))
@@ -57,7 +60,7 @@ def searchPaper(request):
     sortBy = request.GET.get('sortBy','lastUpdatedDate')
     sortOrder = request.GET.get('sortOrder','ascending')
     maxNum = request.GET.get('maxNum','200')
-    start = request.GET.get('start',0)
+    start = request.GET.get('start','0')
     url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + query + "&sortBy="+sortBy+"&sortOrder="+sortOrder+"&start="+start+"&max_results="+maxNum
     '''
     url = 'http://export.arxiv.org/api/query?search_query=ti:%22electron%20thermal%20conductivity%22&sortBy=lastUpdatedDate&sortOrder=ascending'
@@ -145,14 +148,30 @@ def showPaper(request):
 
 
 def recommendPaper(request):
-    return HttpResponse('not finished yet')
-    '''
     user = request.GET.get('user')
-    records = getUserRecords(user)
-    fields = getUserFields(user)
+    obj = models.UserModel.objects.get(userName=user)
+    
+    urls = obj.collectList[:10]
+    '''
+    urls = ["http://arxiv.org/abs/hep-th/9202048v2","http://arxiv.org/abs/cond-mat/9205001v1"]
+    '''
+    sums = []
+    for url in urls:
+        if url =='-1':
+            continue
+        res = requests.get(url)
+        text = res.text
+        soup = bs(text,'lxml')
+        s = soup.findAll("blockquote")
+        sums.append(s[0].text)
+    fields = []
+    focusDict = ast.literal_eval(obj.focusDict)
+    for (k,v) in focusDict.items():
+        fields+=v
+    
     papers = []
     for cat in fields:
-        url = "http://export.arxiv.org/api/query?search_query=cat:" + cat+ "&sortBy=submittedDate&sortOrder=ascending&max_results=50"
+        url = "http://export.arxiv.org/api/query?search_query=cat:" + cat+ "&sortBy=submittedDate&sortOrder=ascending&max_results=10"
         res = requests.get(url)
         data = res.text
         soup = bs(data,'lxml')
@@ -180,10 +199,11 @@ def recommendPaper(request):
                     newPaper.paperLink = link.get('href')
             papers.append(newPaper)
     for paper in papers:
-        for record in records:
-            paper.score+=jaro.jaro_winkler_metric(paper.summary, record.summary)
-    papers.sort()
-    papers = papers[:25]
+        for summary in sums:
+            paper.score+=jaro.jaro_winkler_metric(paper.summary, summary)
+    papers = sorted(papers,key=attrgetter('score'))
+    if len(papers)>10:
+        papers = papers[:10]
     res = dict()
     res['resCode'] = 200
     res['len'] = len(papers)
@@ -206,7 +226,6 @@ def recommendPaper(request):
         res['papers'].append(p)
     res = json.dumps(res)
     return HttpResponse(res)
-    '''
     
     
 
