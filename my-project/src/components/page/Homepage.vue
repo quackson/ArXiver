@@ -1,7 +1,7 @@
 <template>
   <div class="homepage">
     <div class="full-content">
-      <el-tabs v-model="onRoutes" tab-position="left" style="height: 100%;" @tab-click="handleTabClick">
+      <el-tabs v-model="onRoutes" tab-position="left" style="height: 100%;overflow-y:scroll;" @tab-click="handleTabClick">
         <el-tab-pane label="关注列表" name="follow" :key="'follow'">
           <follow-content v-if="tabRefresh.follow"></follow-content>
         </el-tab-pane>

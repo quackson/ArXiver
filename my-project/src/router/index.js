@@ -31,7 +31,7 @@ export default new Router({
                     meta: { title: '综合页面' }
                 },
                 {
-                    path: '/readpage/:url',
+                    path: '/readpage/:url/:id',
                     name: 'readpage',
                     component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/ReadPage.vue'),
                     meta: { title: '论文阅读页面' }

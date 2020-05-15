@@ -345,7 +345,7 @@ export default {
         post_request.append('userName', this.myName)
         post_request.append('contentView', this.replyComment)
         post_request.append('sortedBy', this.value)
-        post_request.append('avatar', 'avatar')
+        post_request.append('avatar', this.myImage)
         this.replyComment = ''
         input.innerHTML = ''
         this.$http
@@ -392,6 +392,8 @@ export default {
         post_request.append('commentID', this.comments[i].id)
         post_request.append('contentView', this.replyComment)
         post_request.append('repliedName', this.myName)
+        
+        post_request.append('avatar', this.myImage)
 
         this.replyComment = ''
         document.getElementsByClassName('reply-comment-input')[i].innerHTML = ''

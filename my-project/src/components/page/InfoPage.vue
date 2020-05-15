@@ -206,7 +206,7 @@ export default {
 
 <style>
 .full-content {
-  width: 98%;
+  width: 100%;
 }
 
 .form-row {
@@ -220,7 +220,6 @@ export default {
   -webkit-box-align: center;
   -webkit-box-pack: center;
 }
-
 .hiddenInput {
   display: none;
 }
