@@ -448,6 +448,7 @@ def postReply(request):
     commentID = request.POST.get('commentID', 1)
     contentView = request.POST.get('contentView', 'CONTENTVIEW')
     repliedName = request.POST.get('repliedName', 'REPLIEDNAME')
+    avatar = request.POST.get('avatar', 'AVATAR')
     models.CommentModel.objects.create(paperID='reply',
                                        userID=userID,
                                        userName=userName,
@@ -457,6 +458,7 @@ def postReply(request):
                                        hot=0,
                                        replyCommentID=commentID,
                                        replyCommentUserName=repliedName,
+                                       avatar=avatar,
                                        likeUserIDList=['-1'],
                                        dislikeUserIDList=['-1'],
                                        )
