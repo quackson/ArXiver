@@ -164,7 +164,7 @@ def recommendPaper(request):
         sums.append(s[0].text)
     fields = []
     focusDict = ast.literal_eval(obj.focusDict)
-    for (k,v) in focusDict.items:
+    for (k,v) in focusDict.items():
         fields+=v
     
     papers = []
