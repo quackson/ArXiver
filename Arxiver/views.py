@@ -45,6 +45,13 @@ def getPaperNum(request):
     sortBy = request.GET.get('sortBy', 'lastUpdatedDate')
     sortOrder = request.GET.get('sortOrder', 'ascending')
     maxNum = '1000'
+    if method not in ['ti','au','abs','co','jr','cat','rn','id','all']:
+        return HttpResponse("invalid method")
+    if sortBy not in ['relevance' , "lastUpdatedDate" , "submittedDate"]:
+        return HttpResponse("invalid sortBy")
+    if sortOrder not in ['ascending','descending']:
+        return HttpResponse("invalid sortOrder")
+    
     url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + \
         query + "&sortBy="+sortBy+"&sortOrder="+sortOrder+"&max_results="+maxNum
     try:
@@ -68,6 +75,16 @@ def searchPaper(request):
     sortOrder = request.GET.get('sortOrder', 'ascending')
     maxNum = request.GET.get('maxNum', '200')
     start = request.GET.get('start', '0')
+    if method not in ['ti','au','abs','co','jr','cat','rn','id','all']:
+        return HttpResponse("invalid method")
+    if sortBy not in ['relevance' , "lastUpdatedDate" , "submittedDate"]:
+        return HttpResponse("invalid sortBy")
+    if sortOrder not in ['ascending','descending']:
+        return HttpResponse("invalid sortOrder")
+    if not maxNum.isdigit():
+        return HttpResponse("invalid maxNum")
+    if not start.isdigit():
+        return HttpResponse("invalid start")
     url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + query + \
         "&sortBy="+sortBy+"&sortOrder="+sortOrder + \
         "&start="+start+"&max_results="+maxNum
@@ -138,9 +155,7 @@ def showPaper(request):
     try:
         res = requests.get(url+'.pdf')
     except:
-        res = dict()
-        res['retCode'] = 404
-        return HttpResponse(res)
+        return HttpResponse("invalid pdfLink")
     f = open(filename, 'wb')
     f.write(res.content)
     f.close()
@@ -158,7 +173,10 @@ def showPaper(request):
 
 
 def getPaperInfo(url):
-    res = requests.get(url)
+    try:
+        res = requests.get(url)
+    except:
+        return HttpResponse("invalid ID")
     text = res.text
     soup = bs(text, 'lxml')
     s = soup.findAll("blockquote")
@@ -381,7 +399,10 @@ def recommendPaper(request):
         'econ'
     ]
     user = request.GET.get('user')
-    obj = models.UserModel.objects.get(userName=user)
+    try:
+        obj = models.UserModel.objects.get(userName=user)
+    except:
+        return HttpResponse("invalid username")
     sums = []
     collectDict = ast.literal_eval(obj.collectDict)
     for (k,v) in collectDict.items():
