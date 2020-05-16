@@ -848,9 +848,8 @@ def register(request):
                             'rg_firstgroup@163.com', [email], fail_silently=False)
 
         if mailret == 1:
-            models.UserModel.objects.create(userName=userName, password=password, email=email,
-                                            collectList=['-1'], focusList=['-1'])
-
+            models.UserModel.objects.create(userName=userName, password=password,email=email,
+                                            collectDict=['-1'], focusList=['-1'])
             obj = models.UserModel.objects.get(userName=userName)
             # obj.collectList.remove('-1')
             obj.save()
