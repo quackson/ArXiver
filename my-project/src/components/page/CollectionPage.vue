@@ -15,7 +15,7 @@
       <el-table-column type="selection" width="55"> </el-table-column>
       <el-table-column prop="paper" label="收藏论文" style="width:20%">
         <template slot-scope="scope">
-          <el-button type="text" @click="openDialog">{{
+          <el-button type="text" @click="openDialog(scope.row)">{{
             scope.row.title
           }}</el-button>
         </template>
@@ -60,8 +60,12 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val; //动态改变
     },
-    openDialog() {
-      this.$router.push({ path: "/readpage" });
+    openDialog(paper) {
+			console.log(`dash: ${paper.pdfLink}`);
+		  this.$router.push({
+          name: 'readpage',
+          params: {url:paper.pdfLink,id:paper.id}
+		  });
     },
     deletePapers(rows) {
 		/*
