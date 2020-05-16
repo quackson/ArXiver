@@ -199,7 +199,7 @@ def recommendPaper(request):
     sums = []
     collectDict = ast.literal_eval(obj.collectDict)
     for (k,v) in collectDict:
-        sums.append(ast.literal_eval(v)['summary'])
+        sums.append(v['summary'])
     sums = sums[:20]
     fields = []
     '''
