@@ -64,12 +64,12 @@
               </div>
               <div class="icon-btn">
                 <span @click="showReplyInput(i, reply.userNmae, reply.id)"></span>
-                <span class="like" @click="likeClick(j, reply)">
+                <span class="like" @click="likeClickreply(i, j, reply)">
                   <i v-if = "reply.currentUserLike == '0'" class="iconfont el-icon-star-on"></i>
                   <i v-else class="iconfont el-icon-star-off"></i>
                   {{ reply.likeNum }}
                 </span>
-                <span class="dislike" @click="dislikeClick(j, reply)">
+                <span class="dislike" @click="dislikeClickreply(i, j, reply)">
                   <i v-if = "reply.currentUserLike == '1'" class="iconfont el-icon-error"></i>
                   <i v-else class="iconfont el-icon-close"></i>
                   {{ reply.dislikeNum }}
@@ -301,6 +301,101 @@ export default {
           post_request.append('paperID', this.paperID)
           post_request.append('userID', this.myID)
           post_request.append('commentID', this.comments[i].id)
+          post_request.append('isLike', '0')
+          post_request.append('sortedBy', this.value)
+          this.$http
+            .request({
+             url: this.$url + '/cancelLike',
+              method: 'post',
+              data: post_request,
+              headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            .then(function(response) {
+              console.log(response)
+            })
+            .catch(function(response) {
+              console.log(response)
+            })
+        } 
+    },
+    likeClickreply(i, j, item) {
+      if (item.currentUserLike === '2') {
+        item.currentUserLike = '0'
+        item.likeNum++
+        var post_request = new FormData()
+        post_request.append('paperID', this.paperID)
+        post_request.append('userID', this.myID)
+        post_request.append('commentID', this.comments[i].replyList[j].id)
+        post_request.append('isLike', '1')
+        post_request.append('sortedBy', this.value)
+        this.$http
+          .request({
+            url: this.$url + '/postLike',
+            method: 'post',
+            data: post_request,
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+          .then(function(response) {
+            console.log(response)
+          })
+          .catch(function(response) {
+            console.log(response)
+          })
+      } else if(item.currentUserLike === '0'){
+          item.currentUserLike = '2'
+          item.likeNum--
+          var post_request = new FormData()
+          post_request.append('paperID', this.paperID)
+          post_request.append('userID', this.myID)
+          post_request.append('commentID', this.comments[i].replyList[j].id)
+          post_request.append('isLike', '1')
+          post_request.append('sortedBy', this.value)
+          this.$http
+            .request({
+             url: this.$url + '/cancelLike',
+              method: 'post',
+              data: post_request,
+              headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            .then(function(response) {
+              console.log(response)
+            })
+            .catch(function(response) {
+              console.log(response)
+            })
+        } 
+        item.isLike = !item.isLike;
+    },
+    dislikeClickreply(i, j, item) {
+      if (item.currentUserLike === '2') {
+        item.currentUserLike = '1'
+        item.dislikeNum++
+        var post_request = new FormData()
+        post_request.append('paperID', this.paperID)
+        post_request.append('userID', this.myID)
+        post_request.append('commentID', this.comments[i].replyList[j].id)
+        post_request.append('isLike', '0')
+        post_request.append('sortedBy', this.value)
+        this.$http
+          .request({
+            url: this.$url + '/postLike',
+            method: 'post',
+            data: post_request,
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+          .then(function(response) {
+            console.log(response)
+          })
+          .catch(function(response) {
+            console.log(response)
+          })
+      } else if(item.currentUserLike === '1'){
+          item.currentUserLike = '2'
+          item.dislikeNum--
+          var post_request = new FormData()
+          post_request.append('paperID', this.paperID)
+          post_request.append('userID', this.myID)
+          post_request.append('commentID', this.comments[i].replyList[j].id)
           post_request.append('isLike', '0')
           post_request.append('sortedBy', this.value)
           this.$http

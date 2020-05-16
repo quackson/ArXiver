@@ -655,7 +655,7 @@ def register(request):
 
         if mailret == 1:
             models.UserModel.objects.create(userName=userName, password=password,email=email,
-                                            collectList=['-1'], focusList=['-1'])
+                                            collectDict=['-1'], focusList=['-1'])
 
             obj = models.UserModel.objects.get(userName=userName)
             #obj.collectList.remove('-1')
