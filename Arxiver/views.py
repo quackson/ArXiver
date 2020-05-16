@@ -174,7 +174,10 @@ def getPaperInfo(url):
     for cat in cats:
         if len(cat)>1:
             category+=(cat.split('(')[1]+'/')
-    doiLink = 'http://dx.doi.org/'+soup.findAll('a',{'class':'link-https link-external'})[0]['data-doi']
+    try:
+        doiLink = 'http://dx.doi.org/'+soup.findAll('a',{'class':'link-https link-external'})[0]['data-doi']
+    except:
+        doiLink = ''
     paperLink = url
     pdf = soup.findAll("a",{"class":"mobile-submission-download"})[0]
     pdfLink = 'https://arXiv.org'+pdf['href']
