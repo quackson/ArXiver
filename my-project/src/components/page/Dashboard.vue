@@ -3,7 +3,8 @@
 <div>
 <el-row :gutter="20">
 <el-col :span="24">
-	<el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"	
+	<el-table v-if="loadcomplete" 
+	:data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"	
 					height="tableHeight"
                     style="width: 100%"
 					>
@@ -49,6 +50,7 @@ export default {
         pageSize:10,
 		totalNum:100, 
 		username:'',
+		loadcomplete:false,
       }
     },	
    methods: {
@@ -77,6 +79,7 @@ export default {
 				}).then(function(response) {
 				  _this.tableData = response.data.papers,
 				  _this.totalNum= response.data.num,
+				  _this.loadcomplete=true,
 				  console.log(_this.tableData)
 				}).catch(function(error) {
 				  console.log(error)
