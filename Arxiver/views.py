@@ -389,11 +389,11 @@ def recommendPaper(request):
     sums = sums[:20]
     fields = []
     focusList = obj.focusList
-    random.shuffle(focusList)
-    focusList = focusList[:10]
     for f in focusList:
         if int(f)<154:
             fields.append(cats[int(f)-1])
+    random.shuffle(fields)
+    fields = fields[:3]
     papers = []
     for cat in fields:
         print(cat)

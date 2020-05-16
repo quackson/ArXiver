@@ -3,7 +3,8 @@
 <div>
 <el-row :gutter="20">
 <el-col :span="24">
-	<el-table :data="tableData.slice(0,pageSize)"	
+	<el-table v-if="loadcomplete"
+		:data="tableData.slice(0,pageSize)"	
 					height="tableHeight"
                     style="width: 100%"
 					>
@@ -43,7 +44,7 @@
 export default {
  data() {		
 	    return {
-        tableData:null,		
+        tableData:[],		
 		tableHeight: window.innerHeight  - 100,
         currentPage:1,
         pageSize:10,
@@ -51,6 +52,7 @@ export default {
 		 k:'0',
 		 m:'0',
 		 way:'origin',
+		 loadcomplete:false,
       }
     },	
    methods: {
@@ -68,6 +70,7 @@ export default {
 				  method:'get',
 				}).then(function(response) {
 				  _this.tableData = response.data.papers,
+				 _this.loadcomplete=true,
 				  //console.log(begin),
 				  //console.log(response.data.papers),
 				  console.log(_this.tableData)
