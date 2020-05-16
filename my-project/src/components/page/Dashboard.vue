@@ -3,7 +3,7 @@
 <div>
 <el-row :gutter="20">
 <el-col :span="24">
-	<el-table :data="tableData.slice(0,pageSize)"	
+	<el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)"	
 					height="tableHeight"
                     style="width: 100%"
 					>
@@ -48,9 +48,7 @@ export default {
         currentPage:1,
         pageSize:10,
 		totalNum:100, 
-		 k:'0',
-		 m:'0',
-		 way:'origin',
+		username:'',
       }
     },	
    methods: {
@@ -59,43 +57,11 @@ export default {
                    console.log(`每页 ${val} 条`);
                    this.pageSize = val;    //动态改变
 	},
-	changetable(page){
-		var begin=(page-1)*this.pageSize;
-				  //加载val页信息
-		let _this=this
-		this.$http.request({
-				  url:_this.$url + '/searchPaper?method='+_this.way+'&query='+_this.k +'&maxNum='+_this.pageSize+'&start='+begin,
-				  method:'get',
-				}).then(function(response) {
-				  _this.tableData = response.data.papers,
-				  //console.log(begin),
-				  //console.log(response.data.papers),
-				  console.log(_this.tableData)
-				}).catch(function(error) {
-				  console.log(error)
-				});
-				
-				//获取论文列表个数
-				this.$http.request({
-				  url:_this.$url + '/getPaperNum?method='+ _this.way+'&query='+_this.k ,
-				  method:'get',
-				}).then(function(response) {
-					//console.log(response),
-				   _this.totalNum=response.data.num,
-				   console.log('获取论文列表个数'),
-				   console.log(_this.totalNum)
-				}).catch(function(error) {
-				  console.log(error)
-				});
-	},
      handleCurrentChange(val) {
                    console.log(`当前页: ${val}`);				   	  
 				 this.currentPage = val;
-				//console.log(this.tabelData);
     },
 	openDialog (paper) {
-				//console.log("get!");
-				//this.$router.push({path: '/readpage' });
 		console.log(`dash: ${paper.pdfLink}`);
 		  this.$router.push({
           name: 'readpage',
@@ -103,19 +69,21 @@ export default {
 		  });
 		 },
 		 getData(qstr){
-				this.k='github';
-				this.way='ti';
-				//加载列表首页信息
-				this.changetable(1);
+				this.username='YourFather';
+				let _this=this
+				this.$http.request({
+				  url:_this.$url + '/getRecommendation?user='+_this.username,
+				  method:'get',
+				}).then(function(response) {
+				  _this.tableData = response.data.papers,
+				  _this.totalNum= response.data.num,
+				  console.log(_this.tableData)
+				}).catch(function(error) {
+				  console.log(error)
+				});
 		 },
    },
    watch: {
-	currentPage(newv, oldv) {
-		console.log("in watch");
-		console.log(newv);
-        this.changetable(newv);
-		},
-		
 	},
 	created(){
 		this.tabelData=new Array(this.pageSize);
@@ -128,14 +96,6 @@ export default {
 </style>
 <style scoped>
 .el-row {
-	/*
-  top:30px;
-  bottom: 70px;
-  right:0px;
-  width:100%;
-  position: absolute;
-  z-index:1;
-  */
   top:4%;
   bottom: 4%;
   right:0px;
@@ -151,12 +111,6 @@ export default {
     height: 100%;
 }
 .block{
-	/*
-  bottom:0px;
-  left: 800px;
-  position:fixed;
-  z-index:1;
-  */
   bottom:0px;
   left: 50%;
   position:fixed;
