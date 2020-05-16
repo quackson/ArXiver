@@ -68,6 +68,9 @@ export default {
           params: {url:paper.pdfLink,id:paper.id}
 		  });
     },
+    handleSelectionChange(val){
+      this.toDelete = val
+    },
     deleteOnePaper(id) {
       var post_request = new FormData()
       post_request.append('userName', this.username)
