@@ -196,21 +196,11 @@ def getPaperInfo(url):
 def recommendPaper(request):
     user = request.GET.get('user')
     obj = models.UserModel.objects.get(userName=user)
-    
-    urls = obj.collectList[:10]
-    '''
-    urls = ["http://arxiv.org/abs/hep-th/9202048v2","http://arxiv.org/abs/cond-mat/9205001v1"]
-    '''
     sums = []
-    for url in urls:
-        try:
-            res = requests.get(url)
-            text = res.text
-            soup = bs(text,'lxml')
-            s = soup.findAll("blockquote")
-            sums.append(s[0].text)
-        except:
-            pass
+    collectDict = ast.literal_eval(obj.collectDict)
+    for (k,v) in collectDict:
+        sums.append(ast.literal_eval(v)['summary'])
+    sums = sums[:20]
     fields = []
     '''
     for f in obj.focusList:
