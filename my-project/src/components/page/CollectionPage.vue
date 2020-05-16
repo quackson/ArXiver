@@ -13,14 +13,14 @@
       style="width: 100%;"
     >
       <el-table-column type="selection" width="55"> </el-table-column>
-      <el-table-column prop="paper" label="收藏论文" style="width:20%">
+      <el-table-column prop="paper" label="收藏论文" style="width:20%" show-overflow-tooltip>
         <template slot-scope="scope">
           <el-button type="text" @click="openDialog(scope.row)">{{
             scope.row.title
           }}</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="author" label="作者" style="width:20%">
+      <el-table-column prop="author" label="作者" style="width:20%" show-overflow-tooltip>
       </el-table-column>
       <el-table-column prop="summary" label="描述" show-overflow-tooltip>
       </el-table-column>
