@@ -1,3 +1,4 @@
+from mysite.settings import BASE_DIR
 from django.shortcuts import render
 from django.http import HttpResponse
 import json
@@ -15,6 +16,8 @@ import jaro
 import ast
 from operator import attrgetter
 import re
+import random
+
 
 class Paper:
     def __init__(self):
@@ -36,12 +39,14 @@ def index(request):
 
 
 def getPaperNum(request):
-    method = request.GET.get('method','ti')
-    query = request.GET.get('query','electron artificial human dioxide geometry part teacher animal this is only for test')
-    sortBy = request.GET.get('sortBy','lastUpdatedDate')
-    sortOrder = request.GET.get('sortOrder','ascending')
+    method = request.GET.get('method', 'ti')
+    query = request.GET.get(
+        'query', 'electron artificial human dioxide geometry part teacher animal this is only for test')
+    sortBy = request.GET.get('sortBy', 'lastUpdatedDate')
+    sortOrder = request.GET.get('sortOrder', 'ascending')
     maxNum = '1000'
-    url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + query + "&sortBy="+sortBy+"&sortOrder="+sortOrder+"&max_results="+maxNum
+    url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + \
+        query + "&sortBy="+sortBy+"&sortOrder="+sortOrder+"&max_results="+maxNum
     try:
         res = requests.get(url)
     except:
@@ -50,22 +55,25 @@ def getPaperNum(request):
         res = json.dump(res)
         return HttpResponse(json.dumps(res))
     data = res.text
-    soup = bs(data,'lxml')
+    soup = bs(data, 'lxml')
     entries = soup.find_all('entry')
     PaperNum = len(entries)
-    return HttpResponse(json.dumps({'retCode':200,'num':PaperNum}))
+    return HttpResponse(json.dumps({'retCode': 200, 'num': PaperNum}))
+
 
 def searchPaper(request):
-    method = request.GET.get('method','ti')
-    query = request.GET.get('query','electron')
-    sortBy = request.GET.get('sortBy','lastUpdatedDate')
-    sortOrder = request.GET.get('sortOrder','ascending')
-    maxNum = request.GET.get('maxNum','200')
-    start = request.GET.get('start','0')
-    url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + query + "&sortBy="+sortBy+"&sortOrder="+sortOrder+"&start="+start+"&max_results="+maxNum
+    method = request.GET.get('method', 'ti')
+    query = request.GET.get('query', 'electron')
+    sortBy = request.GET.get('sortBy', 'lastUpdatedDate')
+    sortOrder = request.GET.get('sortOrder', 'ascending')
+    maxNum = request.GET.get('maxNum', '200')
+    start = request.GET.get('start', '0')
+    url = "http://export.arxiv.org/api/query?search_query=" + method + ":" + query + \
+        "&sortBy="+sortBy+"&sortOrder="+sortOrder + \
+        "&start="+start+"&max_results="+maxNum
     '''
     url = 'http://export.arxiv.org/api/query?search_query=ti:%22electron%20thermal%20conductivity%22&sortBy=lastUpdatedDate&sortOrder=ascending'
-    '''  
+    '''
     try:
         res = requests.get(url)
     except:
@@ -74,7 +82,7 @@ def searchPaper(request):
         res = json.dump(res)
         return HttpResponse(res)
     data = res.text
-    soup = bs(data,'lxml')
+    soup = bs(data, 'lxml')
     entries = soup.find_all('entry')
     papers = []
     for entry in entries:
@@ -92,9 +100,9 @@ def searchPaper(request):
             newPaper.category.append(category.get('term'))
         links = entry.find_all('link')
         for link in links:
-            if link.get('title')=='doi':
+            if link.get('title') == 'doi':
                 newPaper.doiLink = link.get('href')
-            elif link.get('title')=='pdf':
+            elif link.get('title') == 'pdf':
                 newPaper.pdfLink = link.get('href')
             else:
                 newPaper.paperLink = link.get('href')
@@ -107,14 +115,14 @@ def searchPaper(request):
         p = dict()
         p['author'] = ''
         for author in paper.author:
-            p['author']+=(author+'/')
+            p['author'] += (author+'/')
         p['id'] = paper.id
         p['updatedTime'] = paper.publishedTime
         p['title'] = paper.title
         p['summary'] = paper.summary
         p['category'] = ''
         for category in paper.category:
-            p['category'] +=(category+'/')
+            p['category'] += (category+'/')
         p['doiLink'] = paper.doiLink
         p['paperLink'] = paper.paperLink
         p['pdfLink'] = paper.pdfLink
@@ -122,9 +130,10 @@ def searchPaper(request):
     res = json.dumps(res)
     return HttpResponse(res)
 
+
 def showPaper(request):
-    url = request.GET.get('url',"http://arxiv.org/pdf/cond-mat/0402245v1")
-    
+    url = request.GET.get('url', "http://arxiv.org/pdf/cond-mat/0402245v1")
+
     filename = url[-9:]+'.pdf'
     try:
         res = requests.get(url+'.pdf')
@@ -132,10 +141,10 @@ def showPaper(request):
         res = dict()
         res['retCode'] = 404
         return HttpResponse(res)
-    f = open(filename,'wb')
+    f = open(filename, 'wb')
     f.write(res.content)
     f.close()
-    with open (filename,'rb') as pdf:
+    with open(filename, 'rb') as pdf:
         response = HttpResponse(pdf.read(), content_type='application/pdf')
     os.remove(filename)
     return response
@@ -146,83 +155,258 @@ def showPaper(request):
     rp['url'] = fileurl
     return HttpResponse(json.dumps(rp))
     '''
+
+
 def getPaperInfo(url):
     res = requests.get(url)
     text = res.text
-    soup = bs(text,'lxml')
+    soup = bs(text, 'lxml')
     s = soup.findAll("blockquote")
     summary = s[0].text[10:].strip()
     author = ''
     div = soup.findAll("div", {"class": "authors"})[0]
     aus = div.findAll('a')
     for au in aus:
-        author+=(au.text+'/')
+        author += (au.text+'/')
     paper_id = url
     updatedTime = None
     publishedTime = None
-    times = soup.findAll('div',{'class':'submission-history'})[0].text
-    times = re.split('\[|\]',times)
-    for i,t in enumerate(times):
-        if i<4 or i%2==1:
+    times = soup.findAll('div', {'class': 'submission-history'})[0].text
+    times = re.split('\[|\]', times)
+    for i, t in enumerate(times):
+        if i < 4 or i % 2 == 1:
             continue
-        if i==4:
+        if i == 4:
             publishedTime = t.split('(')[0].split('\n')[1].strip()
         updatedTime = t.split('(')[0].split('\n')[1].strip()
-    title = soup.findAll('h1',{'class':'title mathjax'})[0].text.split('Title:')[1]
+    title = soup.findAll('h1', {'class': 'title mathjax'})[
+        0].text.split('Title:')[1]
     category = ''
-    cats = soup.findAll('td',{'class':'tablecell subjects'})[0].text.split(')')
+    cats = soup.findAll('td', {'class': 'tablecell subjects'})[
+        0].text.split(')')
     for cat in cats:
-        if len(cat)>1:
-            category+=(cat.split('(')[1]+'/')
+        if len(cat) > 1:
+            category += (cat.split('(')[1]+'/')
     try:
-        doiLink = 'http://dx.doi.org/'+soup.findAll('a',{'class':'link-https link-external'})[0]['data-doi']
+        doiLink = 'http://dx.doi.org/' + \
+            soup.findAll(
+                'a', {'class': 'link-https link-external'})[0]['data-doi']
     except:
         doiLink = ''
     paperLink = url
-    pdf = soup.findAll("a",{"class":"mobile-submission-download"})[0]
+    pdf = soup.findAll("a", {"class": "mobile-submission-download"})[0]
     pdfLink = 'https://arXiv.org'+pdf['href']
     res = {
-        'author':author,
-        'id':paper_id,
-        'updatedTime':updatedTime,
-        'publishedTime':publishedTime,
-        'title':title,
-        'summary':summary,
-        'category':category,
-        'doiLink':doiLink,
-        'paperLink':paperLink,
-        'pdfLink':pdfLink
+        'author': author,
+        'id': paper_id,
+        'updatedTime': updatedTime,
+        'publishedTime': publishedTime,
+        'title': title,
+        'summary': summary,
+        'category': category,
+        'doiLink': doiLink,
+        'paperLink': paperLink,
+        'pdfLink': pdfLink
     }
     return res
-    
+
 
 def recommendPaper(request):
+    cats = [
+        'astro-ph.GA',
+        'astro-ph.CO',
+        'astro-ph.EP',
+        'astro-ph.HE',
+        'astro-ph.IM',
+        'astro-ph.SR',
+        'cond-mat.dis-nn',
+        'cond-mat.mes-hall',
+        'cond-mat.other',
+        'cond-mat.quant-gas',
+        'cond-mat.soft',
+        'cond-mat.stat-mech',
+        'cond-mat.str-el',
+        'cond-mat.supr-con',
+        'gr-qc',
+        'hep-ex',
+        'hep-lat',
+        'hep-ph',
+        'hep-th',
+        'math.MP',
+        'nlin.AO',
+        'nlin.CG',
+        'nlin.CD',
+        'nlin.SI',
+        'nlin.PS',
+        'nucl-ex',
+        'nucl-th',
+        'physics.acc-ph',
+        'physics.app-ph',
+        'physics.atom-ph',
+        'physics.atm-clus',
+        'physics.bio-ph',
+        'physics.chem-ph',
+        'physics.class-ph',
+        'physics.comp-ph',
+        'physics.data-an',
+        'physics.flu-dyn',
+        'physics.gen-ph',
+        'physics.geo-ph',
+        'physics.hist-ph',
+        'physics.ins-det',
+        'physics.med-ph',
+        'physics.optics',
+        'physics.ed-ph',
+        'physics.soc-ph',
+        'physics.plasm-ph',
+        'physics.pop-ph',
+        'physics.space-ph',
+        'quant-ph',
+        'math.AG',
+        'math.AT',
+        'math.AP',
+        'math.CT',
+        'math.CA',
+        'math.CO',
+        'math.AC',
+        'math.CV',
+        'math.DG',
+        'math.DS',
+        'math.FA',
+        'math.GM',
+        'math.GN',
+        'math.GT',
+        'math.GR',
+        'math.HO',
+        'math.IT',
+        'math.KT',
+        'math.LO',
+        'math.MP',
+        'math.MG',
+        'math.NT',
+        'math.NA',
+        'math.OA',
+        'math.OC',
+        'math.PR',
+        'math.QA',
+        'math.RT',
+        'math.RA',
+        'math.SP',
+        'math.ST',
+        'math.SG',
+        'cs.AI',
+        'cs.CL',
+        'cs.CC',
+        'cs.CE',
+        'cs.CG',
+        'cs.GT',
+        'cs.CV',
+        'cs.CY',
+        'cs.CR',
+        'cs.DS',
+        'cs.DB',
+        'cs.DL',
+        'cs.DM',
+        'cs.DC',
+        'cs.ET',
+        'cs.FL',
+        'cs.GL',
+        'cs.GR',
+        'cs.AR',
+        'cs.HC',
+        'cs.IR',
+        'cs.IT',
+        'cs.LO',
+        'cs.LG',
+        'cs.MS',
+        'cs.MA',
+        'cs.MM',
+        'cs.NI',
+        'cs.NE',
+        'cs.NA',
+        'cs.OS',
+        'cs.OH',
+        'cs.PF',
+        'cs.PL',
+        'cs.RO',
+        'cs.SI',
+        'cs.SE',
+        'cs.SD',
+        'cs.SC',
+        'cs.SY',
+        'q-bio.BM',
+        'q-bio.CB',
+        'q-bio.GN',
+        'q-bio.MN',
+        'q-bio.NC',
+        'q-bio.OT',
+        'q-bio.PE',
+        'q-bio.QM',
+        'q-bio.SC',
+        'q-bio.TO',
+        'q-fin.CP',
+        'q-fin.EC',
+        'q-fin.GN',
+        'q-fin.MF',
+        'q-fin.PM',
+        'q-fin.PR',
+        'q-fin.RM',
+        'q-fin.ST',
+        'q-fin.TR',
+        'stat.AP',
+        'stat.CO',
+        'stat.ML',
+        'stat.ME',
+        'stat.OT',
+        'stat.TH',
+        'eess.AS',
+        'eess.IV',
+        'eess.SP',
+        'eess.SY',
+        'econ.EM',
+        'econ.GN',
+        'econ.TH',
+        'physics',
+        'astro-ph',
+        'cond-mat',
+        'nlin',
+        'physics',
+        'math',
+        'cs',
+        'CoRR',
+        'q-bio',
+        'q-fin',
+        'stat',
+        'eess',
+        'econ'
+    ]
     user = request.GET.get('user')
     obj = models.UserModel.objects.get(userName=user)
     sums = []
     collectDict = ast.literal_eval(obj.collectDict)
-    for (k,v) in collectDict:
+    for (k,v) in collectDict.items():
         sums.append(v['summary'])
     sums = sums[:20]
     fields = []
-    '''
-    for f in obj.focusList:
-        fields.append(num2cat(f))
-        
-    num2cat: a mapping function from number to category
-    '''
-    
+    focusList = obj.focusList
+    random.shuffle(focusList)
+    focusList = focusList[:10]
+    for f in focusList:
+        if int(f)<154:
+            fields.append(cats[int(f)-1])
     papers = []
     for cat in fields:
-        url = "http://export.arxiv.org/api/query?search_query=cat:" + cat+ "&sortBy=submittedDate&sortOrder=desscending&max_results=10"
+        print(cat)
+        url = "http://export.arxiv.org/api/query?search_query=cat:" + cat + "&sortBy=submittedDate&sortOrder=descending&max_results=10"
         res = requests.get(url)
         data = res.text
-        soup = bs(data,'lxml')
+        soup = bs(data, 'lxml')
         entries = soup.find_all('entry')
         for entry in entries:
             newPaper = Paper()
             newPaper.id = entry.id.string
             newPaper.updatedTime = entry.updated.string
+            
             newPaper.publishedTime = entry.published.string
             newPaper.title = entry.title.string
             newPaper.summary = entry.summary.string
@@ -234,18 +418,18 @@ def recommendPaper(request):
                 newPaper.category.append(category.get('term'))
             links = entry.find_all('link')
             for link in links:
-                if link.get('title')=='doi':
+                if link.get('title') == 'doi':
                     newPaper.doiLink = link.get('href')
-                elif link.get('title')=='pdf':
+                elif link.get('title') == 'pdf':
                     newPaper.pdfLink = link.get('href')
                 else:
                     newPaper.paperLink = link.get('href')
             papers.append(newPaper)
     for paper in papers:
         for summary in sums:
-            paper.score+=jaro.jaro_winkler_metric(paper.summary, summary)
-    papers = sorted(papers,key=attrgetter('score'))
-    if len(papers)>10:
+            paper.score += jaro.jaro_winkler_metric(paper.summary, summary)
+    papers = sorted(papers, key=attrgetter('score'))
+    if len(papers) > 10:
         papers = papers[:10]
     res = dict()
     res['resCode'] = 200
@@ -255,22 +439,21 @@ def recommendPaper(request):
         p = dict()
         p['author'] = ''
         for author in paper.author:
-            p['author']+=(author+'/')
+            p['author'] += (author+'/')
         p['id'] = paper.id
         p['updatedTime'] = paper.publishedTime
         p['title'] = paper.title
         p['summary'] = paper.summary
         p['category'] = ''
         for category in paper.category:
-            p['category'] +=(category+'/')
+            p['category'] += (category+'/')
         p['doiLink'] = paper.doiLink
         p['paperLink'] = paper.paperLink
         p['pdfLink'] = paper.pdfLink
         res['papers'].append(p)
     res = json.dumps(res)
     return HttpResponse(res)
-    
-    
+
 
 '''
 # demo所需函数
@@ -289,9 +472,11 @@ def getCommentReply(commentID=1, sortedBy='time', userID='1'):
     res = []
     replys = []
     if sortedBy == 'time':
-        replys = models.CommentModel.objects.filter(replyCommentID=commentID).order_by('-pubTime', 'hot')
+        replys = models.CommentModel.objects.filter(
+            replyCommentID=commentID).order_by('-pubTime', 'hot')
     elif sortedBy == 'hot':
-        replys = models.CommentModel.objects.filter(replyCommentID=commentID).order_by('hot', '-pubTime')
+        replys = models.CommentModel.objects.filter(
+            replyCommentID=commentID).order_by('hot', '-pubTime')
     for single_reply in replys:
         reply = model_to_dict(single_reply, fields=['id',
                                                     'userName',
@@ -334,10 +519,12 @@ def getPaperComment(request):
     # print(sortedBy)
     # sortedBy == 'time':
     # 根据发布时间进行排序
-    comments = models.CommentModel.objects.filter(paperID=paperID).order_by('-pubTime')
+    comments = models.CommentModel.objects.filter(
+        paperID=paperID).order_by('-pubTime')
     # 根据热度进行排序
     if sortedBy == 'hot':
-        comments = models.CommentModel.objects.filter(paperID=paperID).order_by('-hot')
+        comments = models.CommentModel.objects.filter(
+            paperID=paperID).order_by('-hot')
     for single_comment in comments:
         comment = model_to_dict(single_comment, fields=['id',
                                                         'userName',
@@ -360,7 +547,8 @@ def getPaperComment(request):
             comment['currentUserLike'] = '0'
         elif str(userID) in single_comment.dislikeUserIDList:
             comment['currentUserLike'] = '1'
-        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
+        comment['replyList'] = getCommentReply(
+            commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment)
     print('成功获取评论')
     return HttpResponse(json.dumps({'comments': res}))
@@ -417,10 +605,12 @@ def postComment(request):
             comment['currentUserLike'] = '0'
         elif str(userID) in single_comment.dislikeUserIDList:
             comment['currentUserLike'] = '1'
-        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
+        comment['replyList'] = getCommentReply(
+            commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment)
 
     return HttpResponse(json.dumps({'comments': res}))
+
 
 '''
 # 获取评论的头像
@@ -481,7 +671,8 @@ def postReply(request):
             comment['currentUserLike'] = '0'
         elif str(userID) in single_comment.dislikeUserIDList:
             comment['currentUserLike'] = '1'
-        comment['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
+        comment['replyList'] = getCommentReply(
+            commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment)
     return HttpResponse(json.dumps({'comments': res}))
 
@@ -532,7 +723,8 @@ def postLike(request):
             comment_['currentUserLike'] = '0'
         elif str(userID) in single_comment.dislikeUserIDList:
             comment_['currentUserLike'] = '1'
-        comment_['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
+        comment_['replyList'] = getCommentReply(
+            commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment_)
     return HttpResponse(json.dumps({'comments': res}))
 
@@ -580,9 +772,11 @@ def cancelLike(request):
             comment_['currentUserLike'] = '0'
         elif str(userID) in single_comment.dislikeUserIDList:
             comment_['currentUserLike'] = '1'
-        comment_['replyList'] = getCommentReply(commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
+        comment_['replyList'] = getCommentReply(
+            commentID=single_comment.id, sortedBy=sortedBy, userID=userID)
         res.append(comment_)
     return HttpResponse(json.dumps({'comments': res}))
+
 
 '''
 def register(request): # 等同于if request.method == 'POST':
@@ -650,15 +844,20 @@ def register(request):
         except:
             mailret = False
         '''
-        mailret = send_mail('ArXiver注册', '您正在进行ArXiver注册，如果不是您亲自操作，请及时联系本邮箱', 
-            'rg_firstgroup@163.com',[email], fail_silently=False)
+        mailret = send_mail('ArXiver注册', '您正在进行ArXiver注册，如果不是您亲自操作，请及时联系本邮箱',
+                            'rg_firstgroup@163.com', [email], fail_silently=False)
 
         if mailret == 1:
+<<<<<<< HEAD
             models.UserModel.objects.create(userName=userName, password=password,email=email,
                                             collectDict=['-1'], focusList=['-1'])
+=======
+            models.UserModel.objects.create(userName=userName, password=password, email=email,
+                                            collectList=['-1'], focusList=['-1'])
+>>>>>>> e542b474d4a1a3dfb0719bc2bc666403b56afc69
 
             obj = models.UserModel.objects.get(userName=userName)
-            #obj.collectList.remove('-1')
+            # obj.collectList.remove('-1')
             obj.save()
             res['retCode'] = 1
             res['message'] = '注册成功'
@@ -666,7 +865,7 @@ def register(request):
         else:
             res['retCode'] = 2
             res['message'] = '请输入正确的邮箱地址'
-        
+
     else:
         res['retCode'] = 0
         res['message'] = '用户名或邮箱已注册'
@@ -849,7 +1048,8 @@ def cancelCollect(request):
 
 
 # 上传头像
-from mysite.settings import BASE_DIR
+
+
 def uploadHeadImg(request):
     # noinspection PyBroadException
     try:
@@ -869,11 +1069,11 @@ def uploadHeadImg(request):
         if os.path.exists(originImgFullPath):
             if os.path.isfile(originImgFullPath):
                 os.remove(originImgFullPath)
-                #return HttpResponse(json.demps({'retCode':'222'}))
+                # return HttpResponse(json.demps({'retCode':'222'}))
 
         return HttpResponse(json.dumps({'retCode': 1, 'message': '成功上传'}))
     except Exception as e:
-        return HttpResponse(json.dumps({'retCode': 0, 'message':'上传失败'}))
+        return HttpResponse(json.dumps({'retCode': 0, 'message': '上传失败'}))
 
 
 # 获取头像
