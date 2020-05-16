@@ -112,7 +112,7 @@ class UserModel(models.Model):
 
     isOnline = models.IntegerField(default=0)
 
-    collectList = ListField()  # 收藏夹，存储paper的url
+    collectDict = models.TextField()  # 收藏夹，存储paper的Info
     focusList = ListField()  # 关注领域，存储二级学科的list
 
     def __str__(self):

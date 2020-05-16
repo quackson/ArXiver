@@ -712,9 +712,9 @@ def getUserInformation(request):
     res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
                                      'area', 'personHomepage', 'note', 'isOnline'])
     res['collectList'] = []
-    for url in obj.collectList:
-        if url != '-1':
-            res['collectList'].append(url)
+    collectDict = ast.literal_eval(obj.collectDict)
+    for key in collectDict:
+        res['collectList'].append(collectDict[key])
     res['focusList'] = []
     for subject in obj.focusList:
         if subject != '-1':
@@ -762,9 +762,9 @@ def modifyUserInformation(request):
     res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
                                      'area', 'personHomepage', 'note', 'isOnline'])
     res['collectList'] = []
-    for url in obj.collectList:
-        if url != '-1':
-            res['collectList'].append(url)
+    collectDict = ast.literal_eval(obj.collectDict)
+    for key in collectDict:
+        res['collectList'].append(collectDict[key])
     res['focusList'] = []
     for subject in obj.focusList:
         if subject != '-1':
@@ -788,9 +788,9 @@ def addFocus(request):
     res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
                                      'area', 'personHomepage', 'note', 'isOnline'])
     res['collectList'] = []
-    for url in obj.collectList:
-        if url != '-1':
-            res['collectList'].append(url)
+    collectDict = ast.literal_eval(obj.collectDict)
+    for key in collectDict:
+        res['collectList'].append(collectDict[key])
     res['focusList'] = []
     for subject in obj.focusList:
         if subject != '-1':
@@ -804,18 +804,22 @@ def addCollect(request):
     userName = request.POST.get('userName', '')
     paperID = request.POST.get('paperID', 'PAPERID')
 
+    paperInfo = getPaperInfo(paperID)
+
     obj = models.UserModel.objects.get(userName=userName)
-    if paperID not in obj.collectList:
-        obj.collectList.append(paperID)
+    collectDict = ast.literal_eval(obj.collectDict)
+    if paperID not in collectDict:
+        collectDict[paperID] = paperInfo
+        obj.collectDict = str(collectDict)
         obj.save()
 
     obj = models.UserModel.objects.get(userName=userName)
     res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
                                      'area', 'personHomepage', 'note', 'isOnline'])
     res['collectList'] = []
-    for url in obj.collectList:
-        if url != '-1':
-            res['collectList'].append(url)
+    collectDict = ast.literal_eval(obj.collectDict)
+    for key in collectDict:
+        res['collectList'].append(collectDict[key])
     res['focusList'] = []
     for subject in obj.focusList:
         if subject != '-1':
@@ -830,17 +834,19 @@ def cancelCollect(request):
     paperID = request.POST.get('paperID', 'PAPERID')
 
     obj = models.UserModel.objects.get(userName=userName)
-    if paperID in obj.collectList:
-        obj.collectList.remove(paperID)
+    collectDict = ast.literal_eval(obj.collectDict)
+    if paperID in collectDict:
+        collectDict.pop(paperID)
+        obj.collectDict = str(collectDict)
         obj.save()
 
     obj = models.UserModel.objects.get(userName=userName)
     res = model_to_dict(obj, fields=['userName', 'profession', 'email', 'phoneNumber',
                                      'area', 'personHomepage', 'note', 'isOnline'])
     res['collectList'] = []
-    for url in obj.collectList:
-        if url != '-1':
-            res['collectList'].append(url)
+    collectDict = ast.literal_eval(obj.collectDict)
+    for key in collectDict:
+        res['collectList'].append(collectDict[key])
     res['focusList'] = []
     for subject in obj.focusList:
         if subject != '-1':
