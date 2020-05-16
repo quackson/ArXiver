@@ -128,6 +128,7 @@ export default {
    },
    watch: {
     '$route' (to, from) {
+		this.tabelData=new Array(this.pageSize);
         this.getData(this.$route.query);
 		},
 	currentPage(newv, oldv) {
