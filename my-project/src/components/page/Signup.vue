@@ -12,9 +12,9 @@
                         <el-button slot="prepend" icon="el-icon-user-solid"></el-button>
                     </el-input>
                 </el-form-item>
-                <el-form-item prop="username">
+                <el-form-item prop="emali">
                     <el-input v-model="param.email" placeholder="请输入邮箱">
-                        <el-button slot="prepend" icon="el-icon-user-solid"></el-button>
+                        <el-button slot="prepend" icon="el-icon-message"></el-button>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
