@@ -421,18 +421,8 @@ export default {
           message: '评论不能为空',
         })
       } else {
-        let a = {}
+        let _this = this
         let input = document.getElementById('replyInput')
-        let timeNow = new Date().getTime()
-        let time = this.dateStr(timeNow)
-        a.userName = this.myName
-        a.contentView = this.replyComment
-        a.avatar = this.myImage
-        a.pubTime = time
-        a.replyNum = 0
-        a.likeNum = 0
-        a.dislikeNum = 0
-        this.comments.push(a)
 
         var post_request = new FormData()
         post_request.append('paperID', this.paperID)
@@ -451,6 +441,7 @@ export default {
             headers: { 'Content-Type': 'multipart/form-data' },
           })
           .then(function(response) {
+            _this.comments = response.data.comments
             console.log(response)
           })
           .catch(function(response) {
@@ -466,19 +457,7 @@ export default {
           message: '评论不能为空',
         })
       } else {
-        let a = {}
-        let timeNow = new Date().getTime()
-        let time = this.dateStr(timeNow)
-        a.userName = this.myName
-        a.replyCommentUserName = this.comments[i].userName
-        a.avatar = this.myImage
-        a.contentView = this.replyComment
-        a.pubTime = time
-        a.replyNum = 0
-        a.likeNum = 0
-        a.dislikeNum = 0
-        this.comments[i].replyList.push(a)
-
+        let _this = this
         var post_request = new FormData()
         post_request.append('paperID', this.paperID)
         post_request.append('userID', this.myID)
@@ -501,6 +480,7 @@ export default {
             headers: { 'Content-Type': 'multipart/form-data' },
           })
           .then(function(response) {
+            _this.comments = response.data.comments
             console.log(response)
           })
           .catch(function(response) {
@@ -510,34 +490,6 @@ export default {
     },
     onDivInput: function(e) {
       this.replyComment = e.target.innerHTML
-    },
-    dateStr(date) {
-      //获取js 时间戳
-      var time = new Date().getTime()
-      //去掉 js 时间戳后三位，与php 时间戳保持一致
-      time = parseInt((time - date) / 1000)
-      //存储转换值
-      var s
-      if (time < 60 * 10) {
-        //十分钟内
-        return '刚刚'
-      } else if (time < 60 * 60 && time >= 60 * 10) {
-        //超过十分钟少于1小时
-        s = Math.floor(time / 60)
-        return s + '分钟前'
-      } else if (time < 60 * 60 * 24 && time >= 60 * 60) {
-        //超过1小时少于24小时
-        s = Math.floor(time / 60 / 60)
-        return s + '小时前'
-      } else if (time < 60 * 60 * 24 * 30 && time >= 60 * 60 * 24) {
-        //超过1天少于30天内
-        s = Math.floor(time / 60 / 60 / 24)
-        return s + '天前'
-      } else {
-        //超过30天ddd
-        var date = new Date(parseInt(date))
-        return date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate()
-      }
     },
   },
 }
