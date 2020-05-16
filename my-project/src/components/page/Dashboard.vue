@@ -43,7 +43,7 @@
 export default {
  data() {		
 	    return {
-        tableData:null,
+        tableData:[],
 		tableHeight: window.innerHeight  - 100,
         currentPage:1,
         pageSize:10,
