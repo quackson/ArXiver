@@ -394,8 +394,6 @@ def recommendPaper(request):
     for f in focusList:
         if int(f)<154:
             fields.append(cats[int(f)-1])
-    
-
     papers = []
     for cat in fields:
         print(cat)
