@@ -514,7 +514,9 @@ def getCommentReply(commentID=1, sortedBy='time', userID='1'):
                                                     'avatar',
                                                     'replyList'])
         reply['id'] = single_reply.id
-        reply['pubTime'] = str(single_reply.pubTime)
+        tempstr = str(single_reply.pubTime)
+        index = tempstr.find('.')
+        reply['pubTime'] = tempstr[0:index]
         reply['currentUserLike'] = '2'
         if str(userID) in single_reply.likeUserIDList:
             reply['currentUserLike'] = '0'
@@ -562,7 +564,9 @@ def getPaperComment(request):
                                                         'avatar',
                                                         'replyList'])
         comment['id'] = single_comment.id
-        comment['pubTime'] = str(single_comment.pubTime)
+        tempstr = str(single_comment.pubTime)
+        index = tempstr.find('.')
+        comment['pubTime'] = tempstr[0:index]
         comment['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment['currentUserLike'] = '0'
@@ -620,7 +624,9 @@ def postComment(request):
                                                         'avatar',
                                                         'replyList'])
         comment['id'] = single_comment.id
-        comment['pubTime'] = str(single_comment.pubTime)
+        tempstr = str(single_comment.pubTime)
+        index = tempstr.find('.')
+        comment['pubTime'] = tempstr[0:index]
         comment['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment['currentUserLike'] = '0'
@@ -686,7 +692,9 @@ def postReply(request):
                                                         'avatar',
                                                         'replyList'])
         comment['id'] = single_comment.id
-        comment['pubTime'] = str(single_comment.pubTime)
+        tempstr = str(single_comment.pubTime)
+        index = tempstr.find('.')
+        comment['pubTime'] = tempstr[0:index]
         comment['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment['currentUserLike'] = '0'
@@ -738,7 +746,9 @@ def postLike(request):
                                                          'avatar',
                                                          'replyList'])
         comment_['id'] = single_comment.id
-        comment_['pubTime'] = str(single_comment.pubTime)
+        tempstr = str(single_comment.pubTime)
+        index = tempstr.find('.')
+        comment['pubTime'] = tempstr[0:index]
         comment_['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment_['currentUserLike'] = '0'
@@ -787,7 +797,9 @@ def cancelLike(request):
                                                          'avatar',
                                                          'replyList'])
         comment_['id'] = single_comment.id
-        comment_['pubTime'] = str(single_comment.pubTime)
+        tempstr = str(single_comment.pubTime)
+        index = tempstr.find('.')
+        comment['pubTime'] = tempstr[0:index]
         comment_['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment_['currentUserLike'] = '0'
