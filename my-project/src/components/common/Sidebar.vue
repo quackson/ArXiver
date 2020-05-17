@@ -784,7 +784,24 @@ export default {
 	},
     computed: {
         onRoutes() {
-            return this.$route.path.replace('/', '');
+			/*
+			var url=this.$url;
+			var k=0;
+			var L=url.length;
+			while(k<L)
+			{
+				if (url[k]=='#')
+				{
+					k++;
+					break;
+				}
+			}
+			url=url.substring(0,k);
+            return url;
+			*/
+			var pre=this.$route.path.replace('/','');
+			//console.log(pre);
+			return pre;
         }
     },
     created() {

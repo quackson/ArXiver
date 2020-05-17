@@ -30,13 +30,22 @@ export default new Router({
                     component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/Dashboard.vue'),
                     meta: { title: '综合页面' }
                 },
+				{
+                  path: '/readpage/:url/search',
+                  component: () => import(/* webpackChunkName: "search" */ '../components/page/searchPage.vue'),
+                  meta: {title: '个人信息页面'}
+                },
                 {
                     path: '/readpage/:url/:id',
                     name: 'readpage',
                     component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/ReadPage.vue'),
                     meta: { title: '论文阅读页面' }
                 },
-                
+                 {
+                  path: '/account/search',
+                  component: () => import(/* webpackChunkName: "search" */ '../components/page/searchPage.vue'),
+                  meta: {title: '个人信息页面'}
+                },
                 {
                   path: '/account/:activeName',
                   component: () => import(/* webpackChunkName: "homepage" */ '../components/page/Homepage.vue'),
