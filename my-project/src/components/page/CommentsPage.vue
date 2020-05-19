@@ -206,6 +206,9 @@ export default {
       replyInput.style.padding = '8px 8px'
       replyInput.style.border = '2px solid blue'
       replyInput.focus()
+      for(var i=0;i<this.comments.length;i++) {
+        this.comments[i].inputShow = false
+      }
     },
     showReplyBtn() {
       this.btnShow = true

@@ -11,7 +11,7 @@
 
     <div class="logo">arXiver</div>
     <div class="searchbar">
-      <el-input placeholder="请输入内容" v-model="search" >
+      <el-input placeholder="请输入内容" v-model="search" @keyup.enter.native="gotosearchpage()">
         <el-select v-model="select" slot="prepend" placeholder="请选择">
           <el-option label="题目" value="1"></el-option>
           <el-option label="作者" value="2"></el-option>
