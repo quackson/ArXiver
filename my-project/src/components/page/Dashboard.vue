@@ -71,7 +71,7 @@ export default {
 		  });
 		 },
 		 getData(qstr){
-				this.username='YourFather';
+				this.username=localStorage.getItem('ms_username')
 				let _this=this
 				this.$http.request({
 				  url:_this.$url + '/getRecommendation?user='+_this.username,
