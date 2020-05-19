@@ -180,7 +180,10 @@ export default {
       })
       .then(function(response) {
         _this.comments = response.data.comments
-        console.log(response)
+        for(var i=0;i<_this.comments.length;i++) {
+          _this.$set(_this.comments[i], 'inputShow', false)
+        }
+        console.log(_this.comments)
       })
       .catch(function(response) {
         console.log(response)
@@ -213,11 +216,10 @@ export default {
       replyInput.style.border = 'none'
     },
     showReplyInput(i, name, id) {
-      if(this.comments[i].inputShow === null) {
-        Vue.set(this.comments[i], 'inputShow', true)
-      }
-      this.comments[i].inputShow = !this.comments[i].inputShow
-      this.repliedName = name
+      this.comments[this.index].inputShow = false
+      this.index = i
+      this.comments[i].inputShow = true
+      this.replyCommentUserName = name
       this.replyCommentID = id
     },
     _inputShow(i) {
@@ -442,6 +444,9 @@ export default {
           })
           .then(function(response) {
             _this.comments = response.data.comments
+            for(var i=0;i<_this.comments.length;i++) {
+              _this.$set(_this.comments[i], 'inputShow', false)
+            }
             console.log(response)
           })
           .catch(function(response) {
@@ -481,6 +486,9 @@ export default {
           })
           .then(function(response) {
             _this.comments = response.data.comments
+            for(var i=0;i<_this.comments.length;i++) {
+              _this.$set(_this.comments[i], 'inputShow', false)
+            }
             console.log(response)
           })
           .catch(function(response) {
