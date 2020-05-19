@@ -36,7 +36,7 @@
             <span class="author-time">{{ item.pubTime }}</span>
           </div>
           <div class="icon-btn">
-            <span @click="showReplyInput(i, item.name, item.id)"
+            <span @click="showReplyInput(i, item.userName, item.id)"
               ><i class="iconfont el-icon-s-comment"></i>{{ item.replyNum }}</span
             >
             <span class="like" @click="likeClick(i, item)">
@@ -63,7 +63,6 @@
                 <span class="author-time">{{ reply.pubTime }}</span>
               </div>
               <div class="icon-btn">
-                <span @click="showReplyInput(i, reply.userNmae, reply.id)"></span>
                 <span class="like" @click="likeClickreply(i, j, reply)">
                   <i v-if = "reply.currentUserLike == '0'" class="iconfont el-icon-star-on"></i>
                   <i v-else class="iconfont el-icon-star-off"></i>
@@ -85,7 +84,7 @@
             </div>
           </div>
           <div v-show="_inputShow(i)" class="my-reply my-comment-reply">
-            <!--<el-avatar class="header-img" :size="40" :src="myImage"></el-avatar>-->
+            <el-avatar class="header-img" :size="40" :src="myImage"></el-avatar>
             <div class="reply-info">
               <div
                 tabindex="0"
@@ -214,10 +213,11 @@ export default {
       replyInput.style.border = 'none'
     },
     showReplyInput(i, name, id) {
-      this.comments[this.index].inputShow = false
-      this.index = i
-      this.comments[i].inputShow = true
-      this.replyCommentUserName = name
+      if(this.comments[i].inputShow === null) {
+        Vue.set(this.comments[i], 'inputShow', true)
+      }
+      this.comments[i].inputShow = !this.comments[i].inputShow
+      this.repliedName = name
       this.replyCommentID = id
     },
     _inputShow(i) {
