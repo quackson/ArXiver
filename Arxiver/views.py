@@ -748,7 +748,7 @@ def postLike(request):
         comment_['id'] = single_comment.id
         tempstr = str(single_comment.pubTime)
         index = tempstr.find('.')
-        comment['pubTime'] = tempstr[0:index]
+        comment_['pubTime'] = tempstr[0:index]
         comment_['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment_['currentUserLike'] = '0'
@@ -799,7 +799,7 @@ def cancelLike(request):
         comment_['id'] = single_comment.id
         tempstr = str(single_comment.pubTime)
         index = tempstr.find('.')
-        comment['pubTime'] = tempstr[0:index]
+        comment_['pubTime'] = tempstr[0:index]
         comment_['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment_['currentUserLike'] = '0'
