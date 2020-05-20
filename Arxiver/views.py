@@ -414,7 +414,7 @@ def recommendPaper(request):
         if int(f)<154:
             fields.append(cats[int(f)-1])
     random.shuffle(fields)
-    fields = fields[:3]
+    fields = fields[:1]
     papers = []
     for cat in fields:
         print(cat)

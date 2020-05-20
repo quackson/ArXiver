@@ -60,7 +60,17 @@ export default {
                    this.pageSize = val;    //动态改变
 	},
      handleCurrentChange(val) {
-                   console.log(`当前页: ${val}`);				   	  
+                //console.log(`当前页: ${val}`);	
+				console.log(this.totalNum);
+				console.log((val-1)*this.pageSize);
+				if(this.totalNum<=(val-1)*this.pageSize)
+				{
+					_this.$message({
+                    message: "超出最大页码",
+                    type: 'warning',
+					});
+					return;
+				}
 				 this.currentPage = val;
     },
 	openDialog (paper) {
@@ -77,10 +87,12 @@ export default {
 				  url:_this.$url + '/getRecommendation?user='+_this.username,
 				  method:'get',
 				}).then(function(response) {
+				//console.log(response.data),
 				  _this.tableData = response.data.papers,
-				  _this.totalNum= response.data.num,
+				  _this.totalNum= response.data.len,
 				  _this.loadcomplete=true,
 				  console.log(_this.tableData)
+				  //console.log(_this.totalNum)
 				}).catch(function(error) {
 				  console.log(error)
 				});
