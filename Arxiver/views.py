@@ -564,9 +564,9 @@ def getPaperComment(request):
                                                         'avatar',
                                                         'replyList'])
         comment['id'] = single_comment.id
-        tempstr = str(single_comment.pubTime)
-        index = tempstr.find('.')
-        comment['pubTime'] = tempstr[0:index]
+        temp_str = str(single_comment.pubTime)
+        index_ = temp_str.find('.')
+        comment['pubTime'] = temp_str[0:index_]
         comment['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment['currentUserLike'] = '0'
@@ -607,7 +607,12 @@ def postComment(request):
     #                                   avatar=avatar)
 
     # print('成功添加评论')
-    comments = models.CommentModel.objects.filter(paperID=paperID)
+    comments = models.CommentModel.objects.filter(
+        paperID=paperID).order_by('-pubTime')
+    # 根据热度进行排序
+    if sortedBy == 'hot':
+        comments = models.CommentModel.objects.filter(
+            paperID=paperID).order_by('-hot')
     for single_comment in comments:
         comment = model_to_dict(single_comment, fields=['id',
                                                         'userName',
@@ -624,9 +629,9 @@ def postComment(request):
                                                         'avatar',
                                                         'replyList'])
         comment['id'] = single_comment.id
-        tempstr = str(single_comment.pubTime)
-        index = tempstr.find('.')
-        comment['pubTime'] = tempstr[0:index]
+        temp_str = str(single_comment.pubTime)
+        index_ = temp_str.find('.')
+        comment['pubTime'] = temp_str[0:index_]
         comment['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment['currentUserLike'] = '0'
@@ -675,7 +680,13 @@ def postReply(request):
     tmp_comment = models.CommentModel.objects.get(id=commentID)
     tmp_comment.replyNum += 1
     tmp_comment.save()
-    comments = models.CommentModel.objects.filter(paperID=paperID)
+
+    comments = models.CommentModel.objects.filter(
+        paperID=paperID).order_by('-pubTime')
+    # 根据热度进行排序
+    if sortedBy == 'hot':
+        comments = models.CommentModel.objects.filter(
+            paperID=paperID).order_by('-hot')
     for single_comment in comments:
         comment = model_to_dict(single_comment, fields=['id',
                                                         'userName',
@@ -692,9 +703,9 @@ def postReply(request):
                                                         'avatar',
                                                         'replyList'])
         comment['id'] = single_comment.id
-        tempstr = str(single_comment.pubTime)
-        index = tempstr.find('.')
-        comment['pubTime'] = tempstr[0:index]
+        temp_str = str(single_comment.pubTime)
+        index_ = temp_str.find('.')
+        comment['pubTime'] = temp_str[0:index_]
         comment['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment['currentUserLike'] = '0'
@@ -729,7 +740,13 @@ def postLike(request):
         if str(userID) not in comment.dislikeUserIDList:
             comment.dislikeUserIDList.append(str(userID))
     comment.save()
-    comments = models.CommentModel.objects.filter(paperID=paperID)
+
+    comments = models.CommentModel.objects.filter(
+        paperID=paperID).order_by('-pubTime')
+    # 根据热度进行排序
+    if sortedBy == 'hot':
+        comments = models.CommentModel.objects.filter(
+            paperID=paperID).order_by('-hot')
     for single_comment in comments:
         comment_ = model_to_dict(single_comment, fields=['id',
                                                          'userName',
@@ -746,9 +763,9 @@ def postLike(request):
                                                          'avatar',
                                                          'replyList'])
         comment_['id'] = single_comment.id
-        tempstr = str(single_comment.pubTime)
-        index = tempstr.find('.')
-        comment_['pubTime'] = tempstr[0:index]
+        temp_str = str(single_comment.pubTime)
+        index_ = temp_str.find('.')
+        comment_['pubTime'] = temp_str[0:index_]
         comment_['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment_['currentUserLike'] = '0'
@@ -780,7 +797,13 @@ def cancelLike(request):
         if str(userID) in comment.dislikeUserIDList:
             comment.dislikeUserIDList.remove(str(userID))
     comment.save()
-    comments = models.CommentModel.objects.filter(paperID=paperID)
+
+    comments = models.CommentModel.objects.filter(
+        paperID=paperID).order_by('-pubTime')
+    # 根据热度进行排序
+    if sortedBy == 'hot':
+        comments = models.CommentModel.objects.filter(
+            paperID=paperID).order_by('-hot')
     for single_comment in comments:
         comment_ = model_to_dict(single_comment, fields=['id',
                                                          'userName',
@@ -797,9 +820,9 @@ def cancelLike(request):
                                                          'avatar',
                                                          'replyList'])
         comment_['id'] = single_comment.id
-        tempstr = str(single_comment.pubTime)
-        index = tempstr.find('.')
-        comment_['pubTime'] = tempstr[0:index]
+        temp_str = str(single_comment.pubTime)
+        index_ = temp_str.find('.')
+        comment_['pubTime'] = temp_str[0:index_]
         comment_['currentUserLike'] = '2'
         if str(userID) in single_comment.likeUserIDList:
             comment_['currentUserLike'] = '0'
@@ -882,7 +905,7 @@ def register(request):
 
         if mailret == 1:
             models.UserModel.objects.create(userName=userName, password=password,email=email,
-                                            collectDict=['-1'], focusList=['-1'])
+                                            collectDict='{}', focusList=['-1'])
             obj = models.UserModel.objects.get(userName=userName)
             # obj.collectList.remove('-1')
             obj.save()
