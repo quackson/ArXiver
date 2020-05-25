@@ -95,14 +95,33 @@ export default {
 				  //console.log(_this.totalNum)
 				}).catch(function(error) {
 				  console.log(error)
-				});
+				});		
 		 },
+		 defaultdata(){	
+					let _this=this
+					this.$http.request({
+					  url:_this.$url + '/searchPaper?method=cat&query=cs.AI&maxNum=10',
+					  method:'get',
+					}).then(function(response) {
+					//console.log(response.data),
+					  _this.tableData = response.data.papers,
+					  _this.totalNum= response.data.num,
+					  _this.loadcomplete=true,
+					  console.log(_this.tableData)
+					  //console.log(_this.totalNum)
+					}).catch(function(error) {
+					  console.log(error)
+					});
+		 }
+		 
    },
    watch: {
 	},
 	created(){
 		this.tabelData=new Array(this.pageSize);
 		this.getData(this.$route.query);
+		if(!this.loadcomplete)
+			this.defaultdata();
     },   
 }
 </script>

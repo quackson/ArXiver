@@ -134,8 +134,8 @@ export default {
           headers: { 'Content-Type': 'multipart/form-data' },
         })
         .then((response) => {
-          console.log(response.data.userInfo.collectList)
-          ;(this.tableData = response.data.userInfo.collectList),
+          console.log(response.data.userInfo.collectList),
+			(this.tableData = response.data.userInfo.collectList),
             (this.totalNum = response.data.userInfo.collectList.length)
           this.loadCompleted = true
         })

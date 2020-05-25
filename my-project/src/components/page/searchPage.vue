@@ -83,7 +83,7 @@ export default {
 				  url:_this.$url + '/getPaperNum?method='+ _this.way+'&query='+_this.k ,
 				  method:'get',
 				}).then(function(response) {
-					//console.log(response),
+				//console.log(response),
 				   _this.totalNum=response.data.num,
 				   console.log('获取论文列表个数'),
 				   console.log(_this.totalNum)
