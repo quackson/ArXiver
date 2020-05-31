@@ -1,7 +1,7 @@
 <template>
   <div class="full-content">
     <!-- 头像 -->
-    <el-row :gutter="20" style="margin-top:5%;" v-if="info.userName&&avatarImg">
+    <el-row :gutter="20" style="margin-top:5%;" v-if="info.userName && avatarImg">
       <el-col :span="10"
         ><div class="icon">
           <div class="center">
@@ -22,19 +22,25 @@
         <el-form class="main-info" :model="info" label-position="left" width="80%" label-width="100px">
           <el-form-item label="用户名：">{{ info.userName }}</el-form-item>
           <el-form-item label="电子邮件：" placeholder="请输入您的电子邮箱" class="form-row">
-            <el-input v-model="info.email"></el-input>
+            <el-input @input="change($event)" v-model="info.email"></el-input>
           </el-form-item>
           <el-form-item label="专业：" placeholder="请输入您的专业" class="form-row">
-            <el-input v-model="info.profession" maxlength="15" show-word-limit></el-input>
+            <el-input @input="change($event)" v-model="info.profession" maxlength="15" show-word-limit></el-input>
           </el-form-item>
           <el-form-item label="电话号码：" placeholder="请输入您的电话号码" class="form-row">
-            <el-input v-model="info.phoneNumber" maxlength="11"></el-input>
+            <el-input @input="change($event)" v-model="info.phoneNumber" maxlength="11"></el-input>
           </el-form-item>
           <el-form-item label="个人主页：" class="form-row">
-            <el-input v-model="info.personHomepage" placeholder="请输入您的个人主页" maxlength="30"></el-input>
+            <el-input
+              @input="change($event)"
+              v-model="info.personHomepage"
+              placeholder="请输入您的个人主页"
+              maxlength="30"
+            ></el-input>
           </el-form-item>
           <el-form-item label="备注：" show-word-limit class="form-row">
             <el-input
+              @input="change($event)"
               type="textarea"
               v-model="info.note"
               placeholder="请输入您的个人备注"
@@ -53,12 +59,11 @@
 
 <script>
 export default {
-  inject:['reload'],
+  inject: ['reload'],
   data() {
     return {
       avatarImg: undefined,
-      info: {
-      },
+      info: {},
     }
   },
   created() {
@@ -66,6 +71,9 @@ export default {
     this.loadAvatar()
   },
   methods: {
+    change(e) {
+      this.$forceUpdate()
+    },
     load_data: function() {
       this.info.userName = localStorage.getItem('ms_username')
       var post_request = new FormData()
