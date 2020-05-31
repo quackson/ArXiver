@@ -108,7 +108,7 @@ class UserModel(models.Model):
     area = models.CharField(max_length=32, default='undefined')  # 地区
     personHomepage = models.CharField(max_length=200, default='undefined')  # 个人主页
     note = models.TextField(default='undefined')  # 备注
-    headImg = models.ImageField(upload_to="img/")  # 头像
+    headImg = models.ImageField(upload_to="img/", default="img/default.jpg")  # 头像
 
     isOnline = models.IntegerField(default=0)
 

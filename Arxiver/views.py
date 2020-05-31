@@ -1114,12 +1114,14 @@ def uploadHeadImg(request):
         obj.save()
 
         # 删除旧图片
-        originImgFullPath = (BASE_DIR+originImgPath).replace("\\", "/")
-        print(originImgFullPath)
-        if os.path.exists(originImgFullPath):
-            if os.path.isfile(originImgFullPath):
-                os.remove(originImgFullPath)
-                # return HttpResponse(json.demps({'retCode':'222'}))
+        _, f_name = os.path.split(originImgPath)
+        if f_name != "default.jpg":
+            originImgFullPath = (BASE_DIR+originImgPath).replace("\\", "/")
+            print(originImgFullPath)
+            if os.path.exists(originImgFullPath):
+                if os.path.isfile(originImgFullPath):
+                    os.remove(originImgFullPath)
+                    # return HttpResponse(json.demps({'retCode':'222'}))
 
         return HttpResponse(json.dumps({'retCode': 1, 'message': '成功上传'}))
     except Exception as e:
