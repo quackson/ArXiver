@@ -69,4 +69,49 @@
 
   - #### 服务器部署
 
+    - WSGI
   
+- ### 注
+
+  - 有关vue-pdf插件问题，需修改有源码
+
+    ```c++
+    npm install -D worker-plugin
+    #修改vue.config.js
+    const WorkerPlugin = require('worker-plugin')
+    module.exports = {
+      lintOnSave: false,
+      configureWebpack: {
+        plugins: [
+          new WorkerPlugin()
+        ]
+      }
+    }
+    #修改node_modules/vue-pdf/src/vuePdfNoSss.vue,删减第13&14行改为
+    PDFJS.GlobalWorkerOptions.workerPort = new Worker('pdfjs-dist/build/pdf.worker.js', { type: 'module' });
+    ```
+
+    - 第三步修改需在每次npm install后进行一次
+
+- ### 本地运行方式
+
+  - 前端环境及框架
+
+    - 为避免版本不兼容问题，采用vue-cli4，安装方式见官网
+      - 要求安装node.js
+
+  - 后端环境及框架
+
+    - django
+
+  - 命令
+
+    ```cmd
+    cd my-project
+    npm install
+    npm run build
+    cd ..
+    py manage.py runserver
+    ```
+
+    
