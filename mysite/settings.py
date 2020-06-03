@@ -55,7 +55,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['my-project/dist'],
+        'DIRS': ['/root/ArXiver/my-project/dist'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,7 +121,7 @@ import os
 
 FRONTEND_ROOT = 'my-project/dist'
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR,"static/")
+STATIC_ROOT = "/root/ArXiver/static/"
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, FRONTEND_ROOT),
     os.path.join(BASE_DIR, FRONTEND_ROOT + '/static/'),
@@ -139,10 +139,10 @@ INSTALLED_APPS = [
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.163.com'
-EMAIL_PORT = 25
+EMAIL_PORT = 465
 EMAIL_HOST_USER = 'rg_firstgroup@163.com'
 EMAIL_HOST_PASSWORD = 'GODKZOYOMBSPQJYI'
-EMAIL_USER_TLS = True
+EMAIL_USE_SSL = True
 
 
 
