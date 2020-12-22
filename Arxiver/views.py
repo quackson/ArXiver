@@ -853,7 +853,6 @@ def register(request): # 等同于if request.method == 'POST':
         ret['msg'] = 'getting username or password error or database error'
                 
     return HttpResponse(json.dumps(ret))
-
 def login(request):
     ret = {'code': 1000, 'msg': None}
     try:
@@ -888,7 +887,6 @@ def register(request):
     if obj.count() == 0 and objmail.count() == 0:
         '''
         try:
-
             msg = MIMEText('您正在进行ArXiver注册，如果不是您亲自操作，请及时联系管理员邮箱', 'plain', 'utf-8')
             msg['From'] = formataddr(["ArXiver管理员", my_sender])  # 发件人邮件昵称和账号
             msg['To'] = formataddr(["注册用户", email])  # 收件人邮箱昵称和账号
